@@ -40,18 +40,22 @@ export const setNetwork = sdk.Action.withoutInput(
     const mainnetPath = `${prefix}fulc2_db.mainnet`
     const testnetPath = `${prefix}fulc2_db.testnet4`
 
-    if (other === 'mainnet' && existsSync(mainnetPath)) {
+    if (other === 'mainnet') {
       if (existsSync(dbPath)) {
         renameSync(dbPath, testnetPath)
       }
 
-      renameSync(mainnetPath, dbPath)
-    } else if (other === 'testnet4' && existsSync(testnetPath)) {
+      if (existsSync(mainnetPath)) {
+        renameSync(mainnetPath, dbPath)
+      }
+    } else if (other === 'testnet4') {
       if (existsSync(dbPath)) {
         renameSync(dbPath, mainnetPath)
       }
 
-      renameSync(testnetPath, dbPath)
+      if (existsSync(testnetPath)) {
+        renameSync(testnetPath, dbPath)
+      }
     }
 
     return {
