@@ -1,12 +1,8 @@
 import { VersionInfo, IMPOSSIBLE } from '@start9labs/start-sdk'
 import { load } from 'js-yaml'
 import { readFile, rm } from 'fs/promises'
-import {
-  BITCOIND_RPC,
-  BITCOIND_TESTNET_RPC,
-  conf,
-  confDefaults,
-} from '../../file-models/fulcrum.conf'
+import { conf, confDefaults } from '../../file-models/fulcrum.conf'
+import { BITCOIND_RPC, BITCOIND_TESTNET_RPC } from '../../utils'
 
 type LegacyConfig = {
   bitcoind?: {

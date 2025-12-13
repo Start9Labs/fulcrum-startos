@@ -1,8 +1,7 @@
 import { FileHelper } from '@start9labs/start-sdk'
 import { sdk } from './sdk'
 import { conf, confDefaults } from './file-models/fulcrum.conf'
-import { electrumPort, parseCookie } from './utils'
-import { BITCOIND_RPC, BITCOIND_TESTNET_RPC } from './file-models/fulcrum.conf'
+import { electrumPort, getDependencyId, parseCookie } from './utils'
 
 export const main = sdk.setupMain(async ({ effects, started }) => {
   console.info('Starting Fulcrum')
@@ -12,12 +11,7 @@ export const main = sdk.setupMain(async ({ effects, started }) => {
 
   // read settings once (no const), because we may need to write to the settings file below
   const settings = (await conf.read().once()) ?? confDefaults
-  const dependencyId =
-    settings.bitcoind === BITCOIND_RPC
-      ? 'bitcoind'
-      : settings.bitcoind === BITCOIND_TESTNET_RPC
-        ? 'bitcoind-testnet'
-        : null
+  const dependencyId = getDependencyId(settings.bitcoind)
 
   let mounts = sdk.Mounts.of().mountVolume({
     volumeId: 'main',
@@ -68,18 +62,26 @@ export const main = sdk.setupMain(async ({ effects, started }) => {
   // set up a watch on the config file so that if it changes, the service restarts
   await conf.read().const(effects)
 
-  let lastLogLine: string | null = null
+  // var to keep track of sync progress
+  let lastSyncLog: string | null = null
+
   return sdk.Daemons.of(effects, started)
     .addDaemon('primary', {
       subcontainer: subcontainer,
       exec: {
         command: ['Fulcrum', '--ts-format', 'none', '/data/fulcrum.conf'],
+        // capture stdout and keep track of sync progress logs
         onStdout: (chunk) => {
           const text = Buffer.isBuffer(chunk)
             ? chunk.toString('utf8')
             : String(chunk)
+
           console.log(text)
-          lastLogLine = text
+
+          const prefix = '<Controller>'
+          if (text.startsWith(prefix)) {
+            lastSyncLog = text.slice(prefix.length).trim()
+          }
         },
       },
       ready: {
@@ -114,16 +116,15 @@ export const main = sdk.setupMain(async ({ effects, started }) => {
             return fulcrumReady
           }
 
-          if (!lastLogLine) {
+          if (!lastSyncLog || lastSyncLog.length === 0) {
             return {
               message: 'Unknown status',
               result: 'failure',
             }
           }
 
-          const simplified = lastLogLine.replace(/^.*>\s*/, '')
           return {
-            message: simplified,
+            message: lastSyncLog,
             result: 'loading',
           }
         },

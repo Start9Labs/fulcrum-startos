@@ -1,19 +1,10 @@
 import { sdk } from './sdk'
-import {
-  BITCOIND_RPC,
-  BITCOIND_TESTNET_RPC,
-  conf,
-  confDefaults,
-} from './file-models/fulcrum.conf'
+import { conf, confDefaults } from './file-models/fulcrum.conf'
+import { getDependencyId } from './utils'
 
 export const setDependencies = sdk.setupDependencies(async ({ effects }) => {
   const settings = (await conf.read().const(effects)) ?? confDefaults
-  const bitcoindOrTestnet =
-    settings.bitcoind === BITCOIND_RPC
-      ? 'bitcoind'
-      : settings.bitcoind === BITCOIND_TESTNET_RPC
-        ? 'bitcoind-testnet'
-        : null
+  const bitcoindOrTestnet = getDependencyId(settings.bitcoind)
 
   if (!bitcoindOrTestnet) {
     return {}

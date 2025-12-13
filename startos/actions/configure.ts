@@ -1,25 +1,11 @@
 import { sdk } from '../sdk'
-import {
-  BITCOIND_RPC,
-  BITCOIND_TESTNET_RPC,
-  conf,
-  confDefaults,
-} from '../file-models/fulcrum.conf'
+import { conf, confDefaults } from '../file-models/fulcrum.conf'
 import { defaultBanner } from '../utils'
 import { bannerFile } from '../file-models/banner.txt'
 
 const { InputSpec, Value } = sdk
 
 const inputSpec = InputSpec.of({
-  network: Value.select({
-    name: 'Bitcoin Network',
-    description: 'Choose which Bitcoin network Fulcrum should index.',
-    default: 'mainnet',
-    values: {
-      mainnet: 'Bitcoin (mainnet)',
-      testnet: 'Bitcoin (testnet4)',
-    },
-  }),
   banner: Value.textarea({
     name: 'Server Banner',
     description:
@@ -89,10 +75,10 @@ export const configure = sdk.Action.withInput(
   'configure',
   async () => ({
     name: 'Configure',
-    description: 'Update Fulcrum network and performance settings.',
+    description: 'Configure Fulcrum banner and performance settings.',
     warning: null,
     allowedStatuses: 'any',
-    group: null,
+    group: 'Configuration',
     visibility: 'enabled',
   }),
   inputSpec,
@@ -102,9 +88,6 @@ export const configure = sdk.Action.withInput(
     const banner = (await bannerFile.read().once()) ?? defaultBanner
 
     return {
-      network: (settings.bitcoind === BITCOIND_RPC ? 'mainnet' : 'testnet') as
-        | 'mainnet'
-        | 'testnet',
       banner: banner,
       advanced: {
         bitcoindTimeout: settings.bitcoind_timeout,
@@ -118,8 +101,6 @@ export const configure = sdk.Action.withInput(
   async ({ effects, input }) => {
     await bannerFile.write(effects, input.banner || defaultBanner)
     await conf.merge(effects, {
-      bitcoind:
-        input.network == 'mainnet' ? BITCOIND_RPC : BITCOIND_TESTNET_RPC,
       bitcoind_timeout: input.advanced.bitcoindTimeout,
       bitcoind_clients: input.advanced.bitcoindClients,
       worker_threads: input.advanced.workerThreads,

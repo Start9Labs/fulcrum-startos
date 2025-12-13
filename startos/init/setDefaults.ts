@@ -5,7 +5,14 @@ import { defaultBanner } from '../utils'
 
 export const setDefaults = sdk.setupOnInit(async (effects, kind) => {
   if (kind === 'install') {
-    await conf.write(effects, confDefaults)
-    await bannerFile.write(effects, defaultBanner)
+    const current = await conf.read().once()
+    if (!current) {
+      await conf.write(effects, confDefaults)
+    }
+
+    const currentBanner = await bannerFile.read().once()
+    if (!currentBanner) {
+      await bannerFile.write(effects, defaultBanner)
+    }
   }
 })

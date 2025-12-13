@@ -1,12 +1,11 @@
 import { FileHelper, matches } from '@start9labs/start-sdk'
+import { BITCOIND_RPC } from '../utils'
 
 const { boolean, object, string } = matches
 
 // converts string to number, else numbers in ini files break
 const number = string.map((a) => Number(a)).orParser(matches.number)
 
-export const BITCOIND_RPC = 'bitcoind.startos:8332'
-export const BITCOIND_TESTNET_RPC = 'bitcoind-testnet.startos:48332'
 export const confDefaults = {
   datadir: '/data',
   bitcoind: BITCOIND_RPC,
