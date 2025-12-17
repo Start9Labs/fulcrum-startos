@@ -2,7 +2,7 @@ import { VersionInfo, IMPOSSIBLE } from '@start9labs/start-sdk'
 import { load } from 'js-yaml'
 import { readFile, rm } from 'fs/promises'
 import { conf, confDefaults } from '../../file-models/fulcrum.conf'
-import { BITCOIND_RPC, BITCOIND_TESTNET_RPC } from '../../utils'
+import { NETWORKS } from '../../networks'
 
 type LegacyConfig = {
   bitcoind?: {
@@ -36,10 +36,13 @@ export const v2_1_0_3 = VersionInfo.of({
           datadir: confDefaults.datadir,
           bitcoind:
             legacy.bitcoind?.type === 'bitcoind'
-              ? BITCOIND_RPC
-              : BITCOIND_TESTNET_RPC,
+              ? NETWORKS['bitcoind'].rpcAddress
+              : legacy.bitcoind?.type === 'bitcoind-testnet'
+                ? NETWORKS['bitcoind-testnet'].rpcAddress
+                : confDefaults.bitcoind,
           rpcuser: confDefaults.rpcuser,
           rpcpassword: confDefaults.rpcpassword,
+          rpccookie: confDefaults.rpccookie,
           tcp: confDefaults.tcp,
           peering: confDefaults.peering,
           announce: confDefaults.announce,

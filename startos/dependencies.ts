@@ -1,20 +1,20 @@
 import { sdk } from './sdk'
 import { conf, confDefaults } from './file-models/fulcrum.conf'
-import { getDependencyId } from './utils'
+import { getDependencyId, NETWORKS } from './networks'
 
 export const setDependencies = sdk.setupDependencies(async ({ effects }) => {
   const settings = (await conf.read().const(effects)) ?? confDefaults
-  const bitcoindOrTestnet = getDependencyId(settings.bitcoind)
-
-  if (!bitcoindOrTestnet) {
+  const dependencyId = getDependencyId(settings.bitcoind)
+  if (!dependencyId) {
     return {}
   }
 
-  return {
-    [bitcoindOrTestnet]: {
-      kind: 'running',
-      versionRange: '>=29.0.0',
-      healthChecks: ['sync-progress'],
-    },
+  const dependency = NETWORKS[dependencyId].dependency
+
+  const requiredConfig = NETWORKS[dependencyId].requiredConfig
+  if (requiredConfig) {
+    await requiredConfig(effects)
   }
+
+  return { ...dependency }
 })

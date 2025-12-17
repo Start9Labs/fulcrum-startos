@@ -1,9 +1,9 @@
-import { FileHelper } from '@start9labs/start-sdk'
 import { sdk } from './sdk'
 import { conf, confDefaults } from './file-models/fulcrum.conf'
-import { electrumPort, getDependencyId, parseCookie } from './utils'
+import { electrumPort } from './utils'
+import { getDependencyId, NETWORKS } from './networks'
 
-export const main = sdk.setupMain(async ({ effects, started }) => {
+export const main = sdk.setupMain(async ({ effects }) => {
   console.info('Starting Fulcrum')
 
   const depResult = await sdk.checkDependencies(effects)
@@ -25,7 +25,7 @@ export const main = sdk.setupMain(async ({ effects, started }) => {
     mounts = mounts.mountDependency({
       dependencyId,
       volumeId: 'main',
-      subpath: dependencyId === 'bitcoind' ? null : 'testnet4',
+      subpath: NETWORKS[dependencyId].mountSubpath,
       mountpoint: '/mnt/bitcoind',
       readonly: true,
     })
@@ -38,34 +38,13 @@ export const main = sdk.setupMain(async ({ effects, started }) => {
     'main',
   )
 
-  // if bitcoind or bitcoind-testnet is a dependency, retrieve RPC creds from .cookie
-  if (dependencyId) {
-    // also using .const() so that if the file changes, the service restarts
-    const cookie = await FileHelper.string(
-      `${subcontainer.rootfs}/mnt/bitcoind/.cookie`,
-    )
-      .read()
-      .const(effects)
-    const [RPC_USERNAME, RPC_PASSWORD] = parseCookie(cookie)
-
-    // update fulcrum.conf with the RPC credentials
-    await conf.merge(
-      effects,
-      {
-        rpcuser: RPC_USERNAME,
-        rpcpassword: RPC_PASSWORD,
-      },
-      { allowWriteAfterConst: true },
-    )
-  }
-
   // set up a watch on the config file so that if it changes, the service restarts
   await conf.read().const(effects)
 
   // var to keep track of sync progress
   let lastSyncLog: string | null = null
 
-  return sdk.Daemons.of(effects, started)
+  return sdk.Daemons.of(effects)
     .addDaemon('primary', {
       subcontainer: subcontainer,
       exec: {

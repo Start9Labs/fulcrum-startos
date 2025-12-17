@@ -1,5 +1,5 @@
 import { FileHelper, matches } from '@start9labs/start-sdk'
-import { BITCOIND_RPC } from '../utils'
+import { NETWORKS } from '../networks'
 
 const { boolean, object, string } = matches
 
@@ -8,9 +8,10 @@ const number = string.map((a) => Number(a)).orParser(matches.number)
 
 export const confDefaults = {
   datadir: '/data',
-  bitcoind: BITCOIND_RPC,
+  bitcoind: NETWORKS['bitcoind'].rpcAddress,
   rpcuser: '',
   rpcpassword: '',
+  rpccookie: '/mnt/bitcoind/.cookie',
   tcp: '0.0.0.0:50001',
   peering: false,
   announce: false,
@@ -26,9 +27,10 @@ const d = confDefaults
 
 const shape = object({
   datadir: string.onMismatch(d.datadir),
-  bitcoind: string.onMismatch(BITCOIND_RPC),
+  bitcoind: string.onMismatch(d.bitcoind),
   rpcuser: string.onMismatch(d.rpcuser),
   rpcpassword: string.onMismatch(d.rpcpassword),
+  rpccookie: string.onMismatch(d.rpccookie),
   tcp: string.onMismatch(d.tcp),
   peering: boolean.onMismatch(d.peering),
   announce: boolean.onMismatch(d.announce),

@@ -1,26 +1,16 @@
 PACKAGE_ID := $(shell awk -F"'" '/id:/ {print $$2}' startos/manifest.ts)
 INGREDIENTS := $(shell start-cli s9pk list-ingredients 2>/dev/null)
 
-CMD_ARCH_GOAL := $(filter aarch64 x86_64 arm x86, $(MAKECMDGOALS))
-ifeq ($(CMD_ARCH_GOAL),)
-  BUILD := universal
-  S9PK := $(PACKAGE_ID).s9pk
-else
-  RAW_ARCH := $(firstword $(CMD_ARCH_GOAL))
-  ACTUAL_ARCH := $(subst x86,x86_64,$(subst arm,aarch64,$(RAW_ARCH)))
-  BUILD := $(ACTUAL_ARCH)
-  S9PK := $(PACKAGE_ID)_$(BUILD).s9pk
-endif
-
-.PHONY: all aarch64 x86_64 arm x86 clean install check-deps check-init package ingredients
+.PHONY: all aarch64 x86_64 riscv64 arm arm64 x86 riscv arch/* clean install check-deps check-init package ingredients
 .DELETE_ON_ERROR:
+.SECONDARY:
 
 define SUMMARY
 	@manifest=$$(start-cli s9pk inspect $(1) manifest); \
 	size=$$(du -h $(1) | awk '{print $$1}'); \
 	title=$$(printf '%s' "$$manifest" | jq -r .title); \
 	version=$$(printf '%s' "$$manifest" | jq -r .version); \
-	arches=$$(printf '%s' "$$manifest" | jq -r '.hardwareRequirements?.arch // ["x86_64", "aarch64"] | join(", ")'); \
+	arches=$$(printf '%s' "$$manifest" | jq -r '.hardwareRequirements.arch | join(", ")'); \
 	sdkv=$$(printf '%s' "$$manifest" | jq -r .sdkVersion); \
 	gitHash=$$(printf '%s' "$$manifest" | jq -r .gitHash | sed -E 's/(.*-modified)$$/\x1b[0;31m\1\x1b[0m/'); \
 	printf "\n"; \
@@ -37,30 +27,41 @@ define SUMMARY
 endef
 
 all: $(PACKAGE_ID).s9pk
-	$(call SUMMARY,$(S9PK))
+	$(call SUMMARY,$<)
 
-$(BUILD): $(PACKAGE_ID)_$(BUILD).s9pk
-	$(call SUMMARY,$(S9PK))
+arch/%: $(PACKAGE_ID)_%.s9pk
+	$(call SUMMARY,$<)
 
-x86: x86_64
-arm: aarch64
+x86 x86_64: arch/x86_64
+arm arm64 aarch64: arch/aarch64
+riscv riscv64: arch/riscv64
 
-$(S9PK): $(INGREDIENTS) .git/HEAD .git/index
+$(PACKAGE_ID).s9pk: $(INGREDIENTS) .git/HEAD .git/index
 	@$(MAKE) --no-print-directory ingredients
-	@echo "   Packing '$(S9PK)'..."
-	BUILD=$(BUILD) start-cli s9pk pack -o $(S9PK)
+	@echo "   Packing '$@'..."
+	start-cli s9pk pack -o $@
+
+$(PACKAGE_ID)_%.s9pk: $(INGREDIENTS) .git/HEAD .git/index
+	@$(MAKE) --no-print-directory ingredients
+	@echo "   Packing '$@'..."
+	start-cli s9pk pack --arch=$* -o $@
 
 ingredients: $(INGREDIENTS)
 	@echo "   Re-evaluating ingredients..."
 
-install: package | check-deps check-init
+install: | check-deps check-init
 	@HOST=$$(awk -F'/' '/^host:/ {print $$3}' ~/.startos/config.yaml); \
 	if [ -z "$$HOST" ]; then \
 		echo "Error: You must define \"host: http://server-name.local\" in ~/.startos/config.yaml"; \
 		exit 1; \
 	fi; \
-	echo "\n🚀 Installing to $$HOST ..."; \
-	start-cli package install -s $(S9PK)
+	S9PK=$$(ls -t *.s9pk 2>/dev/null | head -1); \
+	if [ -z "$$S9PK" ]; then \
+		echo "Error: No .s9pk file found. Run 'make' first."; \
+		exit 1; \
+	fi; \
+	printf "\n🚀 Installing %s to %s ...\n" "$$S9PK" "$$HOST"; \
+	start-cli package install -s "$$S9PK"
 
 check-deps:
 	@command -v start-cli >/dev/null || \
@@ -84,41 +85,4 @@ package-lock.json: package.json
 	npm i
 
 clean:
-	rm -rf ${PACKAGE_ID}.s9pk
-	rm -rf javascript
-	rm -rf node_modules
-
-scripts/embassy.js: $(TS_FILES)
-	deno run --allow-read --allow-write --allow-env --allow-net scripts/bundle.ts
-
-docker-images/aarch64.tar: manifest.yaml Dockerfile docker_entrypoint.sh assets/nginx.conf $(PATCH_FILES)
-ifeq ($(ARCH),x86_64)
-else
-	mkdir -p docker-images
-	docker buildx build --tag start9/$(PKG_ID)/main:$(PKG_VERSION) \
-		--build-arg PLATFORM=arm64 \
-		--build-arg YQ_VERSION=$(YQ_VERSION) \
-		--build-arg YQ_SHA=$(YQ_SHA_ARM64) \
-		--platform=linux/arm64 -o type=docker,dest=docker-images/aarch64.tar .
-endif
-
-docker-images/x86_64.tar: manifest.yaml Dockerfile docker_entrypoint.sh assets/nginx.conf $(PATCH_FILES)
-ifeq ($(ARCH),aarch64)
-else
-	mkdir -p docker-images
-	docker buildx build --tag start9/$(PKG_ID)/main:$(PKG_VERSION) \
-		--build-arg PLATFORM=arm64 \
-		--build-arg YQ_VERSION=$(YQ_VERSION) \
-		--build-arg YQ_SHA=$(YQ_SHA_ARM64) \
-		--platform=linux/amd64 -o type=docker,dest=docker-images/x86_64.tar .
-endif
-
-$(PKG_ID).s9pk: manifest.yaml instructions.md icon.png LICENSE scripts/embassy.js docker-images/aarch64.tar docker-images/x86_64.tar
-ifeq ($(ARCH),aarch64)
-	@echo "start-sdk: Preparing aarch64 package ..."
-else ifeq ($(ARCH),x86_64)
-	@echo "start-sdk: Preparing x86_64 package ..."
-else
-	@echo "start-sdk: Preparing Universal Package ..."
-endif
-	@start-sdk pack
+	@echo "Cleaning up build artifacts..."

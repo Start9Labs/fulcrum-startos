@@ -1,11 +1,23 @@
 import { sdk } from '../sdk'
 import { conf, confDefaults } from '../file-models/fulcrum.conf'
-import { defaultBanner } from '../utils'
+import { defaultBanner, DB_PATH_ACTIVE } from '../utils'
+import { getDependencyId, NETWORKS, DEPENDENCYID } from '../networks'
 import { bannerFile } from '../file-models/banner.txt'
+import { existsSync, renameSync } from 'fs'
 
 const { InputSpec, Value } = sdk
 
+const availableNetworks = Object.fromEntries(
+  Object.entries(NETWORKS).map(([key, config]) => [key, config.title]),
+) as Record<DEPENDENCYID, string>
+
 const inputSpec = InputSpec.of({
+  network: Value.select({
+    name: 'Network',
+    description: 'Select the Bitcoin network Fulcrum will operate on.',
+    default: 'bitcoind',
+    values: availableNetworks,
+  }),
   banner: Value.textarea({
     name: 'Server Banner',
     description:
@@ -75,7 +87,7 @@ export const configure = sdk.Action.withInput(
   'configure',
   async () => ({
     name: 'Configure',
-    description: 'Configure Fulcrum banner and performance settings.',
+    description: 'Configure Fulcrum network, banner and performance settings.',
     warning: null,
     allowedStatuses: 'any',
     group: 'Configuration',
@@ -88,6 +100,7 @@ export const configure = sdk.Action.withInput(
     const banner = (await bannerFile.read().once()) ?? defaultBanner
 
     return {
+      network: getDependencyId(settings.bitcoind) || 'bitcoind',
       banner: banner,
       advanced: {
         bitcoindTimeout: settings.bitcoind_timeout,
@@ -100,7 +113,29 @@ export const configure = sdk.Action.withInput(
   },
   async ({ effects, input }) => {
     await bannerFile.write(effects, input.banner || defaultBanner)
+    var currentNetwork = await conf.read((e) => e.bitcoind).once()
+    var selectedNetwork = NETWORKS[input.network].rpcAddress
+
+    if (currentNetwork !== selectedNetwork) {
+      console.log(`Network changed: ${currentNetwork} -> ${selectedNetwork}`)
+
+      const currentDependencyId = getDependencyId(currentNetwork)
+      const selectedDependencyId = input.network
+
+      // Move database directories when network changes
+      // Save current database to its network-specific directory
+      if (currentDependencyId && existsSync(DB_PATH_ACTIVE)) {
+        renameSync(DB_PATH_ACTIVE, NETWORKS[currentDependencyId].dbPath)
+      }
+
+      // Load the selected network's database (if it exists)
+      const selectedDbPath = NETWORKS[selectedDependencyId].dbPath
+      if (existsSync(selectedDbPath)) {
+        renameSync(selectedDbPath, DB_PATH_ACTIVE)
+      }
+    }
     await conf.merge(effects, {
+      bitcoind: NETWORKS[input.network].rpcAddress,
       bitcoind_timeout: input.advanced.bitcoindTimeout,
       bitcoind_clients: input.advanced.bitcoindClients,
       worker_threads: input.advanced.workerThreads,
