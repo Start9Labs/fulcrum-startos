@@ -18,7 +18,7 @@ type LegacyConfig = {
 }
 
 export const v2_1_0_3 = VersionInfo.of({
-  version: '2.1.0:3-beta.0',
+  version: '2.1.0:3-beta.1',
   releaseNotes: 'Migrated to the StartOS 0.4 SDK.',
   migrations: {
     up: async ({ effects }) => {
