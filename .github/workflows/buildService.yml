@@ -4,10 +4,10 @@ on:
   workflow_dispatch:
   pull_request:
     paths-ignore: ['*.md']
-    branches: ['main', 'master', 'update/040', 'update/040-new']
+    branches: ['main', 'master', 'update/040']
   push:
     paths-ignore: ['*.md']
-    branches: ['main', 'master', 'update/040', 'update/040-new']
+    branches: ['main', 'master', 'update/040']
 
 jobs:
   BuildPackage:
@@ -23,6 +23,8 @@ jobs:
 
       - name: Build the service package
         id: build
+        env:
+          S9DEVKEY: ${{ secrets.S9DEVKEY }}
         run: |
           start-cli init-key
           if [[ -n "$S9DEVKEY" ]]; then
