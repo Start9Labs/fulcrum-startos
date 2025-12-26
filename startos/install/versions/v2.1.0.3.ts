@@ -18,11 +18,11 @@ type LegacyConfig = {
 }
 
 export const v2_1_0_3 = VersionInfo.of({
-  version: '2.1.0:3-beta.1',
+  version: '2.1.0:3-beta.2',
   releaseNotes: 'Migrated to the StartOS 0.4 SDK.',
   migrations: {
     up: async ({ effects }) => {
-      let next = confDefaults
+      let next = (await conf.read().once()) ?? confDefaults
 
       try {
         const legacy = load(
@@ -43,7 +43,7 @@ export const v2_1_0_3 = VersionInfo.of({
           rpcuser: confDefaults.rpcuser,
           rpcpassword: confDefaults.rpcpassword,
           rpccookie: confDefaults.rpccookie,
-          tcp: confDefaults.tcp,
+          tcp: confDefaults.tcp,          
           peering: confDefaults.peering,
           announce: confDefaults.announce,
           bitcoind_timeout:
@@ -64,7 +64,7 @@ export const v2_1_0_3 = VersionInfo.of({
         console.warn('No legacy config found, using defaults', error)
       }
 
-      await conf.write(effects, next)
+      await conf.merge(effects, next)
       await rm('/media/startos/volumes/main/start9', { recursive: true }).catch(
         () => undefined,
       )

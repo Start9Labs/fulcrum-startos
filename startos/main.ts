@@ -6,11 +6,7 @@ import { getDependencyId, NETWORKS } from './networks'
 export const main = sdk.setupMain(async ({ effects }) => {
   console.info('Starting Fulcrum')
 
-  const depResult = await sdk.checkDependencies(effects)
-  depResult.throwIfNotSatisfied()
-
-  // read settings once (no const), because we may need to write to the settings file below
-  const settings = (await conf.read().once()) ?? confDefaults
+  const settings = (await conf.read().const(effects)) ?? confDefaults
   const dependencyId = getDependencyId(settings.bitcoind)
 
   let mounts = sdk.Mounts.of().mountVolume({
@@ -20,7 +16,7 @@ export const main = sdk.setupMain(async ({ effects }) => {
     readonly: false,
   })
 
-  // only mount bitcoind if bitcoind or bitcoind-testnet is selected
+  // only mount if a dependency is set
   if (dependencyId) {
     mounts = mounts.mountDependency({
       dependencyId,
@@ -38,11 +34,9 @@ export const main = sdk.setupMain(async ({ effects }) => {
     'main',
   )
 
-  // set up a watch on the config file so that if it changes, the service restarts
-  await conf.read().const(effects)
-
   // var to keep track of sync progress
   let lastSyncLog: string | null = null
+  let isSyncing = false
 
   return sdk.Daemons.of(effects)
     .addDaemon('primary', {
@@ -66,7 +60,7 @@ export const main = sdk.setupMain(async ({ effects }) => {
       ready: {
         display: 'Electrum (SSL)',
         fn: async () => {
-          return await sdk.healthCheck.checkPortListening(
+          const result = await sdk.healthCheck.checkPortListening(
             effects,
             electrumPort,
             {
@@ -74,6 +68,17 @@ export const main = sdk.setupMain(async ({ effects }) => {
               errorMessage: 'The Electrum interface is not ready',
             },
           )
+
+          if (result.result === 'success') return result
+
+          if (isSyncing) {
+            return {
+              result: 'loading',
+              message: 'Electrum interface not ready while syncing...',
+            }
+          }
+
+          return result
         },
       },
       requires: [],
@@ -92,16 +97,19 @@ export const main = sdk.setupMain(async ({ effects }) => {
           )
 
           if (fulcrumReady.result === 'success') {
+            isSyncing = false
             return fulcrumReady
           }
 
-          if (!lastSyncLog || lastSyncLog.length === 0) {
+          if (!lastSyncLog) {
+            isSyncing = false
             return {
               message: 'Unknown status',
-              result: 'failure',
+              result: 'loading',
             }
           }
 
+          isSyncing = true
           return {
             message: lastSyncLog,
             result: 'loading',

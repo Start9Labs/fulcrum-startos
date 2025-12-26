@@ -31,12 +31,12 @@ export const manifest = setupManifest({
   },
   alerts: {
     install:
-      'WARNING: Fulcrum requires significant system resources: 1GB+ RAM during sync and 160GB+ for indexes. When combined with a Bitcoin node (~800GB), total storage requirements exceed 1TB. A 2TB drive is strongly recommended. Insufficient resources may cause system instability or failure.',
+      'WARNING: Fulcrum requires significant system resources: 2GB+ RAM during sync and 180GB+ for indexes. When combined with a Bitcoin node (~800GB), total storage requirements exceed 1TB. A 2TB drive is strongly recommended. Insufficient resources may cause system instability or failure.',
     update: null,
     uninstall: null,
     restore: null,
     start:
-      'WARNING: Fulcrum requires significant system resources: 1GB+ RAM during sync and 160GB+ for indexes. When combined with a Bitcoin node (~800GB), total storage requirements exceed 1TB. A 2TB drive is strongly recommended. Insufficient resources may cause system instability or failure.',
+      'WARNING: Fulcrum requires significant system resources: 2GB+ RAM during sync and 180GB+ for indexes. When combined with a Bitcoin node (~800GB), total storage requirements exceed 1TB. A 2TB drive is strongly recommended. Insufficient resources may cause system instability or failure.',
     stop: null,
   },
   dependencies: manifestDependencies,
