@@ -1,14 +1,18 @@
 export const electrumPort = 50001
 
-export const defaultBanner = `
-
-
-█▀▀ █▀█ █▀▀ █▀▀   █▀ ▄▀█ █▀▄▀█ █▀█ █░█ █▀█ ▄▀█ █
-█▀░ █▀▄ ██▄ ██▄   ▄█ █▀█ █░▀░█ █▄█ █▄█ █▀▄ █▀█ █
-
-Welcome to your Fulcrum Server!
-Connected to $SERVER_VERSION
-For information and updates: https://freesamourai.com`
-
-export const DB_PATH_PREFIX = '/media/startos/volumes/main/'
-export const DB_PATH_ACTIVE = `${DB_PATH_PREFIX}fulc2_db`
+export const confDefaults = {
+  datadir: '/data',
+  bitcoind: 'bitcoind.startos:8332',
+  rpcuser: '',
+  rpcpassword: '',
+  rpccookie: '/mnt/bitcoind/.cookie',
+  tcp: '0.0.0.0:50001',
+  peering: false,
+  announce: false,
+  bitcoind_timeout: 30,
+  bitcoind_clients: 3,
+  worker_threads: 0,
+  db_mem: 2048,
+  db_max_open_files: 1000,
+  banner: '/data/banner.txt',
+} as const

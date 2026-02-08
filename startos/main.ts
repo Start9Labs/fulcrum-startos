@@ -1,38 +1,10 @@
 import { sdk } from './sdk'
-import { conf, confDefaults } from './file-models/fulcrum.conf'
+import { i18n } from './i18n'
 import { electrumPort } from './utils'
-import { getDependencyId, NETWORKS } from './networks'
+import { manifest as bitcoinManifest } from 'bitcoind-startos/startos/manifest'
 
 export const main = sdk.setupMain(async ({ effects }) => {
-  console.info('Starting Fulcrum')
-
-  const settings = (await conf.read().const(effects)) ?? confDefaults
-  const dependencyId = getDependencyId(settings.bitcoind)
-
-  let mounts = sdk.Mounts.of().mountVolume({
-    volumeId: 'main',
-    subpath: null,
-    mountpoint: '/data',
-    readonly: false,
-  })
-
-  // only mount if a dependency is set
-  if (dependencyId) {
-    mounts = mounts.mountDependency({
-      dependencyId,
-      volumeId: 'main',
-      subpath: NETWORKS[dependencyId].mountSubpath,
-      mountpoint: '/mnt/bitcoind',
-      readonly: true,
-    })
-  }
-
-  const subcontainer = await sdk.SubContainer.of(
-    effects,
-    { imageId: 'main' },
-    mounts,
-    'main',
-  )
+  console.info(i18n('Starting Fulcrum'))
 
   // var to keep track of sync progress
   let lastSyncLog: string | null = null
@@ -40,7 +12,25 @@ export const main = sdk.setupMain(async ({ effects }) => {
 
   return sdk.Daemons.of(effects)
     .addDaemon('primary', {
-      subcontainer: subcontainer,
+      subcontainer: await sdk.SubContainer.of(
+        effects,
+        { imageId: 'main' },
+        sdk.Mounts.of()
+          .mountVolume({
+            volumeId: 'main',
+            subpath: null,
+            mountpoint: '/data',
+            readonly: false,
+          })
+          .mountDependency<typeof bitcoinManifest>({
+            dependencyId: 'bitcoind',
+            volumeId: 'main',
+            subpath: null,
+            mountpoint: '/mnt/bitcoind',
+            readonly: true,
+          }),
+        'primary-sub',
+      ),
       exec: {
         command: ['Fulcrum', '--ts-format', 'none', '/data/fulcrum.conf'],
         // capture stdout and keep track of sync progress logs
@@ -58,14 +48,14 @@ export const main = sdk.setupMain(async ({ effects }) => {
         },
       },
       ready: {
-        display: 'Electrum (SSL)',
+        display: i18n('Electrum (SSL)'),
         fn: async () => {
           const result = await sdk.healthCheck.checkPortListening(
             effects,
             electrumPort,
             {
-              successMessage: 'The Electrum interface is ready',
-              errorMessage: 'The Electrum interface is not ready',
+              successMessage: i18n('The Electrum interface is ready'),
+              errorMessage: i18n('The Electrum interface is not ready'),
             },
           )
 
@@ -74,7 +64,7 @@ export const main = sdk.setupMain(async ({ effects }) => {
           if (isSyncing) {
             return {
               result: 'loading',
-              message: 'Electrum interface not ready while syncing...',
+              message: i18n('Electrum interface not ready while syncing...'),
             }
           }
 
@@ -85,13 +75,13 @@ export const main = sdk.setupMain(async ({ effects }) => {
     })
     .addHealthCheck('sync-progress', {
       ready: {
-        display: 'Sync Progress',
+        display: i18n('Sync Progress'),
         fn: async () => {
           const fulcrumReady = await sdk.healthCheck.checkPortListening(
             effects,
             electrumPort,
             {
-              successMessage: 'Fulcrum is synced',
+              successMessage: i18n('Fulcrum is synced'),
               errorMessage: '',
             },
           )
@@ -104,7 +94,7 @@ export const main = sdk.setupMain(async ({ effects }) => {
           if (!lastSyncLog) {
             isSyncing = false
             return {
-              message: 'Unknown status',
+              message: i18n('Unknown status'),
               result: 'loading',
             }
           }
@@ -116,6 +106,6 @@ export const main = sdk.setupMain(async ({ effects }) => {
           }
         },
       },
-      requires: [],
+      requires: ['primary'],
     })
 })

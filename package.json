@@ -6,15 +6,12 @@
     "check": "tsc --noEmit"
   },
   "dependencies": {
-    "@start9labs/start-sdk": "^0.4.0-beta.45",
-    "bitcoind-startos": "git+https://github.com/Start9Labs/bitcoind-startos.git#update/040",
-    "bitcoind-testnet-startos": "git+https://github.com/remcoros/bitcoind-testnet-startos.git#update/040-testnet4",
-    "js-yaml": "^4.1.1"
+    "@start9labs/start-sdk": "^0.4.0-beta.48",
+    "bitcoind-startos": "git+https://github.com/Start9Labs/bitcoind-startos.git#update/040"
   },
   "devDependencies": {
     "@types/node": "^22.19.1",
-    "@types/js-yaml": "^4.0.9",
-    "@vercel/ncc": "^0.38.4",
+"@vercel/ncc": "^0.38.4",
     "prettier": "^3.6.2",
     "typescript": "^5.9.3"
   },

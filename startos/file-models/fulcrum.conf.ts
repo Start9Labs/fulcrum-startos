@@ -1,50 +1,49 @@
 import { FileHelper, matches } from '@start9labs/start-sdk'
-import { NETWORKS } from '../networks'
+import { sdk } from '../sdk'
+import { confDefaults } from '../utils'
 
 const { boolean, object, string } = matches
 
 // converts string to number, else numbers in ini files break
 const number = string.map((a) => Number(a)).orParser(matches.number)
 
-export const confDefaults = {
-  datadir: '/data',
-  bitcoind: NETWORKS['bitcoind'].rpcAddress,
-  rpcuser: '',
-  rpcpassword: '',
-  rpccookie: '/mnt/bitcoind/.cookie',
-  tcp: '0.0.0.0:50001',
-  peering: false,
-  announce: false,
-  bitcoind_timeout: 30,
-  bitcoind_clients: 3,
-  worker_threads: 0,
-  db_mem: 2048,
-  db_max_open_files: 1000,
-  banner: '/data/banner.txt',
-}
-
-const d = confDefaults
+export const {
+  datadir,
+  bitcoind,
+  rpcuser,
+  rpcpassword,
+  rpccookie,
+  tcp,
+  peering,
+  announce,
+  bitcoind_timeout,
+  bitcoind_clients,
+  worker_threads,
+  db_mem,
+  db_max_open_files,
+  banner,
+} = confDefaults
 
 const shape = object({
-  datadir: string.onMismatch(d.datadir),
-  bitcoind: string.onMismatch(d.bitcoind),
-  rpcuser: string.onMismatch(d.rpcuser),
-  rpcpassword: string.onMismatch(d.rpcpassword),
-  rpccookie: string.onMismatch(d.rpccookie),
-  tcp: string.onMismatch(d.tcp),
-  peering: boolean.onMismatch(d.peering),
-  announce: boolean.onMismatch(d.announce),
-  bitcoind_timeout: number.onMismatch(d.bitcoind_timeout),
-  bitcoind_clients: number.onMismatch(d.bitcoind_clients),
-  worker_threads: number.onMismatch(d.worker_threads),
-  db_mem: number.onMismatch(d.db_mem),
-  db_max_open_files: number.onMismatch(d.db_max_open_files),
-  banner: string.onMismatch(d.banner),
+  datadir: string.onMismatch(datadir),
+  bitcoind: string.onMismatch(bitcoind),
+  rpcuser: string.onMismatch(rpcuser),
+  rpcpassword: string.onMismatch(rpcpassword),
+  rpccookie: string.onMismatch(rpccookie),
+  tcp: string.onMismatch(tcp),
+  peering: boolean.onMismatch(peering),
+  announce: boolean.onMismatch(announce),
+  bitcoind_timeout: number.onMismatch(bitcoind_timeout),
+  bitcoind_clients: number.onMismatch(bitcoind_clients),
+  worker_threads: number.onMismatch(worker_threads),
+  db_mem: number.onMismatch(db_mem),
+  db_max_open_files: number.onMismatch(db_max_open_files),
+  banner: string.onMismatch(banner),
 })
 
-export const conf = FileHelper.ini(
+export const fulcrumConf = FileHelper.ini(
   {
-    volumeId: 'main',
+    base: sdk.volumes.main,
     subpath: 'fulcrum.conf',
   },
   shape,

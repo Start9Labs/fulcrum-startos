@@ -1,20 +1,28 @@
+import { i18n } from './i18n'
 import { sdk } from './sdk'
-import { conf, confDefaults } from './file-models/fulcrum.conf'
-import { getDependencyId, NETWORKS } from './networks'
+import { otherConfig as bitcoinConfig } from 'bitcoind-startos/startos/actions/config/other'
 
 export const setDependencies = sdk.setupDependencies(async ({ effects }) => {
-  const settings = (await conf.read().const(effects)) ?? confDefaults
-  const dependencyId = getDependencyId(settings.bitcoind)
-  if (!dependencyId) {
-    return {}
+  await sdk.action.createTask(effects, 'bitcoind', bitcoinConfig, 'critical', {
+    input: {
+      kind: 'partial',
+      value: {
+        prune: 0,
+        txindex: true,
+        zmqEnabled: true,
+      },
+    },
+    reason: i18n(
+      'Pruning must be disabled, txindex and ZMQ must be enabled for Fulcrum to function properly.',
+    ),
+    when: { condition: 'input-not-matches', once: false },
+  })
+
+  return {
+    bitcoind: {
+      kind: 'running',
+      versionRange: '>=29.0.0',
+      healthChecks: ['sync-progress'],
+    },
   }
-
-  const dependency = NETWORKS[dependencyId].dependency
-
-  const requiredConfig = NETWORKS[dependencyId].requiredConfig
-  if (requiredConfig) {
-    await requiredConfig(effects)
-  }
-
-  return { ...dependency }
 })
