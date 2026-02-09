@@ -8,7 +8,6 @@ export const main = sdk.setupMain(async ({ effects }) => {
 
   // var to keep track of sync progress
   let lastSyncLog: string | null = null
-  let isSyncing = false
 
   return sdk.Daemons.of(effects)
     .addDaemon('primary', {
@@ -61,7 +60,7 @@ export const main = sdk.setupMain(async ({ effects }) => {
 
           if (result.result === 'success') return result
 
-          if (isSyncing) {
+          if (lastSyncLog) {
             return {
               result: 'loading',
               message: i18n('Electrum interface not ready while syncing...'),
@@ -86,26 +85,21 @@ export const main = sdk.setupMain(async ({ effects }) => {
             },
           )
 
-          if (fulcrumReady.result === 'success') {
-            isSyncing = false
-            return fulcrumReady
-          }
+          if (fulcrumReady.result === 'success') return fulcrumReady
 
           if (!lastSyncLog) {
-            isSyncing = false
             return {
               message: i18n('Unknown status'),
               result: 'loading',
             }
           }
 
-          isSyncing = true
           return {
             message: lastSyncLog,
             result: 'loading',
           }
         },
       },
-      requires: ['primary'],
+      requires: [],
     })
 })
