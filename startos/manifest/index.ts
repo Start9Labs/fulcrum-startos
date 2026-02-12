@@ -10,7 +10,7 @@ export const manifest = setupManifest({
   supportSite: 'https://github.com/cculianu/Fulcrum/issues',
   marketingSite: 'https://github.com/cculianu/Fulcrum',
   donationUrl: 'https://github.com/cculianu/Fulcrum',
-  docsUrl: 'https://github.com/cculianu/Fulcrum',
+  docsUrl: 'https://github.com/cculianu/Fulcrum/blob/master/doc/',
   description: { short, long },
   volumes: ['main'],
   images: {

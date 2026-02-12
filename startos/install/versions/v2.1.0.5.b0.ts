@@ -3,14 +3,14 @@ import { readFile, rm } from 'fs/promises'
 import { fulcrumConf } from '../../file-models/fulcrum.conf'
 import { confDefaults } from '../../utils'
 
-export const v2_1_0_4_b0 = VersionInfo.of({
-  version: '2.1.0:4-beta.0',
+export const v2_1_0_5_b0 = VersionInfo.of({
+  version: '2.1.0:5-beta.0',
   releaseNotes: {
-    en_US: 'Added i18n support and updated to SDK beta.48.',
-    es_ES: 'Se añadió soporte de i18n y se actualizó al SDK beta.48.',
-    de_DE: 'I18n-Unterstützung hinzugefügt und auf SDK beta.48 aktualisiert.',
-    pl_PL: 'Dodano obsługę i18n i zaktualizowano do SDK beta.48.',
-    fr_FR: 'Ajout du support i18n et mise à jour vers le SDK beta.48.',
+    en_US: 'Updated README, workflows, and docs URL.',
+    es_ES: 'Se actualizó el README, los flujos de trabajo y la URL de documentación.',
+    de_DE: 'README, Workflows und Dokumentations-URL aktualisiert.',
+    pl_PL: 'Zaktualizowano README, przepływy pracy i URL dokumentacji.',
+    fr_FR: "Mise à jour du README, des workflows et de l'URL de documentation.",
   },
   migrations: {
     up: async ({ effects }) => {
