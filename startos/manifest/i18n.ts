@@ -1,3 +1,11 @@
+export const bitcoindDescription = {
+  en_US: 'Provides Bitcoin network connection and blockchain data.',
+  es_ES: 'Proporciona conexión a la red Bitcoin y datos de la cadena de bloques.',
+  de_DE: 'Bietet Bitcoin-Netzwerkverbindung und Blockchain-Daten.',
+  pl_PL: 'Zapewnia połączenie z siecią Bitcoin i dane łańcucha bloków.',
+  fr_FR: 'Fournit la connexion au réseau Bitcoin et les données de la blockchain.',
+}
+
 export const short = {
   en_US:
     'A fast and efficient Electrum server that connects to your Bitcoin node.',

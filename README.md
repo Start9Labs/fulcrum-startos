@@ -7,8 +7,8 @@
 > **Upstream docs:** <https://github.com/cculianu/Fulcrum/blob/master/doc/>
 >
 > Everything not listed in this document should behave the same as upstream
-> Fulcrum v2.1.0. If a feature, setting, or behavior is not mentioned
-> here, the upstream documentation is accurate and fully applicable.
+> Fulcrum. If a feature, setting, or behavior is not mentioned here, the
+> upstream documentation is accurate and fully applicable.
 
 [Fulcrum](https://github.com/cculianu/Fulcrum) is a high-performance Electrum server that indexes the Bitcoin blockchain from your own Bitcoin node. It allows you to connect hardware and software wallets to your own node, ensuring privacy and security.
 
@@ -34,11 +34,11 @@
 
 ## Image and Container Runtime
 
-| Property      | Value                                           |
-| ------------- | ----------------------------------------------- |
-| Image         | `cculianu/fulcrum:v2.1.0` (upstream unmodified) |
-| Architectures | x86_64, aarch64                                 |
-| Command       | `Fulcrum --ts-format none /data/fulcrum.conf`   |
+| Property      | Value                                         |
+| ------------- | --------------------------------------------- |
+| Image         | `cculianu/fulcrum` (upstream unmodified)      |
+| Architectures | x86_64, aarch64                               |
+| Command       | `Fulcrum --ts-format none /data/fulcrum.conf` |
 
 ---
 
@@ -148,9 +148,9 @@ Connect wallets using the Electrum protocol (e.g., Sparrow, Electrum, BlueWallet
 
 ## Dependencies
 
-| Dependency   | Required | Version  | Purpose         | Auto-Config                        |
-| ------------ | -------- | -------- | --------------- | ---------------------------------- |
-| Bitcoin Core | Yes      | >=29.0.0 | Blockchain data | prune=0, txindex=true, ZMQ enabled |
+| Dependency   | Required | Version | Purpose         | Auto-Config                        |
+| ------------ | -------- | ------- | --------------- | ---------------------------------- |
+| Bitcoin Core | Yes      | >=28.3  | Blockchain data | prune=0, txindex=true, ZMQ enabled |
 
 StartOS creates a critical task on Bitcoin Core to enforce required settings (no pruning, transaction index, and ZMQ).
 
@@ -215,8 +215,8 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for build instructions and development wo
 
 ```yaml
 package_id: fulcrum
-upstream_version: 2.1.0
-image: cculianu/fulcrum:v2.1.0
+upstream_version: latest
+image: cculianu/fulcrum
 architectures: [x86_64, aarch64]
 volumes:
   main: /data
@@ -225,7 +225,7 @@ ports:
 dependencies:
   bitcoind:
     required: true
-    min_version: '>=29.0.0'
+    min_version: '>=30.2'
     enforced_config: [prune=0, txindex=true, zmqEnabled=true]
 actions:
   - configure (enabled, any)

@@ -1,7 +1,6 @@
 import { VersionInfo, IMPOSSIBLE, YAML } from '@start9labs/start-sdk'
 import { readFile, rm } from 'fs/promises'
 import { fulcrumConf } from '../../file-models/fulcrum.conf'
-import { confDefaults } from '../../utils'
 
 export const v2_1_0_5_b0 = VersionInfo.of({
   version: '2.1.0:5-beta.0',
@@ -37,16 +36,20 @@ export const v2_1_0_5_b0 = VersionInfo.of({
         const { advanced } = configYaml
 
         await fulcrumConf.write(effects, {
-          ...confDefaults,
-          bitcoind_timeout:
-            advanced?.['bitcoind-timeout'] ?? confDefaults.bitcoind_timeout,
-          bitcoind_clients:
-            advanced?.['bitcoind-clients'] ?? confDefaults.bitcoind_clients,
-          worker_threads:
-            advanced?.['worker-threads'] ?? confDefaults.worker_threads,
-          db_mem: advanced?.['db-mem'] ?? confDefaults.db_mem,
-          db_max_open_files:
-            advanced?.['db-max-open-files'] ?? confDefaults.db_max_open_files,
+          datadir: '/data',
+          bitcoind: 'bitcoind.startos:8332',
+          rpcuser: '',
+          rpcpassword: '',
+          rpccookie: '/mnt/bitcoind/.cookie',
+          tcp: '0.0.0.0:50001',
+          peering: false,
+          announce: false,
+          banner: '/data/banner.txt',
+          bitcoind_timeout: advanced?.['bitcoind-timeout'] ?? 30,
+          bitcoind_clients: advanced?.['bitcoind-clients'] ?? 3,
+          worker_threads: advanced?.['worker-threads'] ?? 0,
+          db_mem: advanced?.['db-mem'] ?? 2048,
+          db_max_open_files: advanced?.['db-max-open-files'] ?? 1000,
         })
 
         // remove old start9 dir

@@ -1,7 +1,6 @@
 import { sdk } from '../sdk'
 import { i18n } from '../i18n'
 import { fulcrumConf } from '../file-models/fulcrum.conf'
-import { confDefaults } from '../utils'
 import { bannerTxt } from '../file-models/banner.txt'
 
 const { InputSpec, Value } = sdk
@@ -26,7 +25,7 @@ const inputSpec = InputSpec.of({
     ),
     required: true,
     integer: true,
-    default: confDefaults.bitcoind_timeout,
+    default: 30,
     min: 30,
   }),
   bitcoindClients: Value.number({
@@ -36,7 +35,7 @@ const inputSpec = InputSpec.of({
     ),
     required: true,
     integer: true,
-    default: confDefaults.bitcoind_clients,
+    default: 3,
     min: 1,
   }),
   workerThreads: Value.number({
@@ -46,7 +45,7 @@ const inputSpec = InputSpec.of({
     ),
     required: true,
     integer: true,
-    default: confDefaults.worker_threads,
+    default: 0,
     min: 0,
   }),
   dbMem: Value.number({
@@ -56,7 +55,7 @@ const inputSpec = InputSpec.of({
     ),
     required: true,
     integer: true,
-    default: confDefaults.db_mem,
+    default: 2048,
     min: 50,
   }),
   dbMaxOpenFiles: Value.number({
@@ -66,7 +65,7 @@ const inputSpec = InputSpec.of({
     ),
     required: true,
     integer: true,
-    default: confDefaults.db_max_open_files,
+    default: 1000,
     min: 20,
   }),
 })
