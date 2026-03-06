@@ -2,8 +2,8 @@ import { VersionInfo, IMPOSSIBLE, YAML } from '@start9labs/start-sdk'
 import { readFile, rm } from 'fs/promises'
 import { fulcrumConf } from '../../file-models/fulcrum.conf'
 
-export const v2_1_0_5_b0 = VersionInfo.of({
-  version: '2.1.0:5-beta.0',
+export const v2_1_0_6_b0 = VersionInfo.of({
+  version: '2.1.0:6-beta.0',
   releaseNotes: {
     en_US: 'Updated README, workflows, and docs URL.',
     es_ES: 'Se actualizó el README, los flujos de trabajo y la URL de documentación.',
