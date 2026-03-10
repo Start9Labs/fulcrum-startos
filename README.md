@@ -4,7 +4,7 @@
 
 # Fulcrum on StartOS
 
-> **Upstream docs:** <https://github.com/cculianu/Fulcrum/blob/master/doc/>
+> **Upstream docs:** <https://github.com/cculianu/Fulcrum/tree/master/doc>
 >
 > Everything not listed in this document should behave the same as upstream
 > Fulcrum. If a feature, setting, or behavior is not mentioned here, the
