@@ -1,22 +1,21 @@
 import { setupManifest } from '@start9labs/start-sdk'
 import {
-  bitcoindDescription,
-  short,
-  long,
   alertInstall,
   alertStart,
+  bitcoindDescription,
+  long,
+  short,
 } from './i18n'
 
 export const manifest = setupManifest({
   id: 'fulcrum',
   title: 'Fulcrum',
   license: 'MIT',
-  packageRepo:
-    'https://github.com/Start9Labs/fulcrum-startos/tree/update/040',
+  packageRepo: 'https://github.com/Start9Labs/fulcrum-startos/tree/update/040',
   upstreamRepo: 'https://github.com/cculianu/Fulcrum',
   marketingUrl: 'https://github.com/cculianu/Fulcrum',
-  docsUrls: ['https://github.com/cculianu/Fulcrum/blob/master/doc/'],
   donationUrl: 'https://github.com/cculianu/Fulcrum',
+  docsUrls: ['https://github.com/cculianu/Fulcrum/tree/master/doc'],
   description: { short, long },
   volumes: ['main'],
   images: {
