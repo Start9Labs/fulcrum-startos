@@ -2,8 +2,8 @@ import { VersionInfo, IMPOSSIBLE, YAML } from '@start9labs/start-sdk'
 import { readFile, rm } from 'fs/promises'
 import { fulcrumConf } from '../../file-models/fulcrum.conf'
 
-export const v_2_1_0_7_b1 = VersionInfo.of({
-  version: '2.1.0:7-beta.1',
+export const v_2_1_0_7_b2 = VersionInfo.of({
+  version: '2.1.0:7-beta.2',
   releaseNotes: {
     en_US: 'Update to StartOS SDK beta.60',
     es_ES: 'Actualización a StartOS SDK beta.60',
