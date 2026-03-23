@@ -215,7 +215,6 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for build instructions and development wo
 
 ```yaml
 package_id: fulcrum
-upstream_version: latest
 image: cculianu/fulcrum
 architectures: [x86_64, aarch64]
 volumes:
@@ -225,7 +224,7 @@ ports:
 dependencies:
   bitcoind:
     required: true
-    min_version: '>=30.2'
+    min_version: '>=28.3'
     enforced_config: [prune=0, txindex=true, zmqEnabled=true]
 actions:
   - configure (enabled, any)
