@@ -1,9 +1,9 @@
 import { IMPOSSIBLE, VersionInfo } from '@start9labs/start-sdk'
 import { rm } from 'fs/promises'
-import { fulcrumConf } from '../../file-models/fulcrum.conf'
 
-export const v_2_1_0_7_b5 = VersionInfo.of({
-  version: '2.1.0:7-beta.5',
+
+export const v_2_1_0_7_b6 = VersionInfo.of({
+  version: '2.1.0:7-beta.6',
   releaseNotes: {
     en_US: 'Fix migration bug where config file was not created on update',
     es_ES: 'Corrección de error de migración donde el archivo de configuración no se creaba al actualizar',
@@ -13,9 +13,6 @@ export const v_2_1_0_7_b5 = VersionInfo.of({
   },
   migrations: {
     up: async ({ effects }) => {
-      // seed fulcrum.conf if not already
-      await fulcrumConf.merge(effects, {})
-
       // remove old start9 dir
       await rm('/media/startos/volumes/main/start9', {
         recursive: true,
