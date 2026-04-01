@@ -1,6 +1,8 @@
-fulcrum.s9pk
-image.tar
-scripts/*.js
-.DS_Store
+*.s9pk
 .vscode/
+.DS_Store
+scripts/*.js
 docker-images
+node_modules
+javascript/*
+ncc-cache
