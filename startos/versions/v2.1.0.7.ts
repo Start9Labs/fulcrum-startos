@@ -1,8 +1,8 @@
 import { IMPOSSIBLE, VersionInfo } from '@start9labs/start-sdk'
 import { rm } from 'fs/promises'
 
-export const v_2_1_0_7_b7 = VersionInfo.of({
-  version: '2.1.0:7-beta.7',
+export const v_2_1_0_7 = VersionInfo.of({
+  version: '2.1.0:7',
   releaseNotes: {
     en_US: 'Fix migration bug where config file was not created on update',
     es_ES:

@@ -11,7 +11,7 @@ export const manifest = setupManifest({
   id: 'fulcrum',
   title: 'Fulcrum',
   license: 'MIT',
-  packageRepo: 'https://github.com/Start9Labs/fulcrum-startos/tree/update/040',
+  packageRepo: 'https://github.com/Start9Labs/fulcrum-startos',
   upstreamRepo: 'https://github.com/cculianu/Fulcrum',
   marketingUrl: 'https://github.com/cculianu/Fulcrum',
   donationUrl: 'https://github.com/cculianu/Fulcrum',
@@ -40,7 +40,7 @@ export const manifest = setupManifest({
       optional: false,
       metadata: {
         title: 'Bitcoin Core',
-        icon: 'https://raw.githubusercontent.com/Start9Labs/bitcoin-core-startos/refs/heads/040/30.2/dep-icon.svg',
+        icon: 'https://raw.githubusercontent.com/Start9Labs/bitcoin-core-startos/refs/heads/30.x/dep-icon.svg',
       },
     },
   },
