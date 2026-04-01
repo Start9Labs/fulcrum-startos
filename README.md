@@ -148,11 +148,16 @@ Connect wallets using the Electrum protocol (e.g., Sparrow, Electrum, BlueWallet
 
 ## Dependencies
 
-| Dependency   | Required | Version | Purpose         | Auto-Config                        |
-| ------------ | -------- | ------- | --------------- | ---------------------------------- |
-| Bitcoin Core | Yes      | >=28.3  | Blockchain data | prune=0, txindex=true, ZMQ enabled |
+### Bitcoin Core (required)
 
-StartOS creates a critical task on Bitcoin Core to enforce required settings (no pruning, transaction index, and ZMQ).
+| Property | Value |
+|----------|-------|
+| Version constraint | `>=28.3` |
+| Health checks | `bitcoind` must pass before Fulcrum starts |
+| Mounted volumes | `main` → `/mnt/bitcoind` (read-only) |
+| Purpose | Blockchain data via RPC and cookie authentication |
+
+StartOS creates a critical task on Bitcoin Core to enforce required settings: `prune=0`, `txindex=true`, `zmqEnabled=true`.
 
 ---
 
@@ -220,27 +225,10 @@ architectures: [x86_64, aarch64]
 volumes:
   main: /data
 ports:
-  electrum: 50001 (internal), 50002 (preferred external, SSL)
+  electrum: 50001
 dependencies:
-  bitcoind:
-    required: true
-    min_version: '>=28.3'
-    enforced_config: [prune=0, txindex=true, zmqEnabled=true]
+  - bitcoind
+startos_managed_env_vars: none
 actions:
-  - configure (enabled, any)
-health_checks:
-  - electrum: port_listening 50001
-  - sync: controller log monitoring
-backup_volumes:
-  - main (excludes fulc2_db/, fulc2_db.mainnet/, latch)
-startos_managed_config:
-  datadir: /data
-  bitcoind: bitcoind.startos:8332
-  rpccookie: /mnt/bitcoind/.cookie
-  tcp: 0.0.0.0:50001
-  peering: false
-  announce: false
-not_available:
-  - Admin RPC interface
-  - Peer discovery/announcement
+  - configure
 ```
