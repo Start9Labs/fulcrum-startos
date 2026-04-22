@@ -28,6 +28,7 @@ export default {
     23: 'Aumente esto si Fulcrum registra quejas sobre demasiados archivos abiertos.',
     24: 'Configuración',
     25: 'La poda debe estar deshabilitada, txindex y ZMQ deben estar habilitados para que Fulcrum funcione correctamente.',
+    26: 'Predeterminado',
   },
   de_DE: {
     0: 'Fulcrum wird gestartet',
@@ -56,6 +57,7 @@ export default {
     23: 'Erhöhen Sie diesen Wert, wenn Fulcrum Beschwerden über zu viele offene Dateien protokolliert.',
     24: 'Konfiguration',
     25: 'Das Beschneiden muss deaktiviert, txindex und ZMQ müssen aktiviert sein, damit Fulcrum ordnungsgemäß funktioniert.',
+    26: 'Standard',
   },
   pl_PL: {
     0: 'Uruchamianie Fulcrum',
@@ -84,6 +86,7 @@ export default {
     23: 'Zwiększ tę wartość, jeśli Fulcrum zgłasza skargi dotyczące zbyt wielu otwartych plików.',
     24: 'Konfiguracja',
     25: 'Przycinanie musi być wyłączone, txindex i ZMQ muszą być włączone, aby Fulcrum działał prawidłowo.',
+    26: 'Domyślnie',
   },
   fr_FR: {
     0: 'Démarrage de Fulcrum',
@@ -112,5 +115,6 @@ export default {
     23: 'Augmentez cette valeur si Fulcrum signale des plaintes concernant trop de fichiers ouverts.',
     24: 'Configuration',
     25: "L'élagage doit être désactivé, txindex et ZMQ doivent être activés pour que Fulcrum fonctionne correctement.",
+    26: 'Par défaut',
   },
 } satisfies Record<string, LangDict>

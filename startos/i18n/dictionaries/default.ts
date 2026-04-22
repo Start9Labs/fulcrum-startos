@@ -31,6 +31,7 @@ const dict = {
   'Configuration': 24,
   // dependencies.ts
   'Pruning must be disabled, txindex and ZMQ must be enabled for Fulcrum to function properly.': 25,
+  'Default': 26,
 } as const
 
 export type I18nKey = keyof typeof dict

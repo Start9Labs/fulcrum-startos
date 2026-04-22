@@ -1,7 +1,7 @@
 import { sdk } from './sdk'
 import { i18n } from './i18n'
 import { electrumPort } from './utils'
-import { manifest as bitcoinManifest } from 'bitcoind-startos/startos/manifest'
+import { manifest as bitcoinManifest } from 'bitcoin-core-startos/startos/manifest'
 
 export const main = sdk.setupMain(async ({ effects }) => {
   console.info(i18n('Starting Fulcrum'))
