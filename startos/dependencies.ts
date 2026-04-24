@@ -7,7 +7,7 @@ export const setDependencies = sdk.setupDependencies(async ({ effects }) => {
     input: {
       kind: 'partial',
       value: {
-        prune: null,
+        prune: 0,
         txindex: true,
         zmqEnabled: true,
       },
@@ -21,7 +21,7 @@ export const setDependencies = sdk.setupDependencies(async ({ effects }) => {
   return {
     bitcoind: {
       kind: 'running',
-      versionRange: '>=28.3:7',
+      versionRange: '>=28.3:8',
       healthChecks: ['bitcoind'],
     },
   }
