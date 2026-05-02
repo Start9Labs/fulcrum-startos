@@ -1,4 +1,5 @@
-import { VersionInfo, IMPOSSIBLE } from '@start9labs/start-sdk'
+import { IMPOSSIBLE, VersionInfo } from '@start9labs/start-sdk'
+import { rm } from 'fs/promises'
 
 export const v_2_1_0_10 = VersionInfo.of({
   version: '2.1.0:10',
@@ -10,7 +11,12 @@ export const v_2_1_0_10 = VersionInfo.of({
     fr_FR: 'Mises à jour internes (start-sdk 1.3.3)',
   },
   migrations: {
-    up: async ({ effects }) => {},
+    up: async ({ effects }) => {
+      // remove old start9 dir
+      await rm('/media/startos/volumes/main/start9', {
+        recursive: true,
+      }).catch(console.error)
+    },
     down: IMPOSSIBLE,
   },
 })
