@@ -15,7 +15,6 @@ export const manifest = setupManifest({
   upstreamRepo: 'https://github.com/cculianu/Fulcrum',
   marketingUrl: 'https://github.com/cculianu/Fulcrum',
   donationUrl: 'https://github.com/cculianu/Fulcrum',
-  docsUrls: ['https://github.com/cculianu/Fulcrum/tree/master/doc'],
   description: { short, long },
   volumes: ['main'],
   images: {
