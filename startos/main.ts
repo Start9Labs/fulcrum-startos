@@ -2,9 +2,13 @@ import { sdk } from './sdk'
 import { i18n } from './i18n'
 import { electrumPort } from './utils'
 import { manifest as bitcoinManifest } from 'bitcoin-core-startos/startos/manifest'
+import { storeJson } from './file-models/store.json'
 
 export const main = sdk.setupMain(async ({ effects }) => {
   console.info(i18n('Starting Fulcrum'))
+
+  const store = await storeJson.read().once()
+  if (!store) throw new Error('No store')
 
   // var to keep track of sync progress
   let lastSyncLog: string | null = null
@@ -101,5 +105,24 @@ export const main = sdk.setupMain(async ({ effects }) => {
         },
       },
       requires: [],
+    })
+    .addOneshot('synced-true', {
+      subcontainer: null,
+      exec: {
+        fn: async () => {
+          if (!store.syncNotified) {
+            await sdk.notification.create(effects, {
+              level: 'success',
+              title: i18n('Sync Complete'),
+              message: i18n(
+                'Fulcrum has finished building its address index. The Electrum server is ready.',
+              ),
+            })
+            await storeJson.merge(effects, { syncNotified: true })
+          }
+          return null
+        },
+      },
+      requires: ['sync-progress'],
     })
 })

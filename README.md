@@ -184,7 +184,7 @@ The database is excluded because it can be rebuilt from the Bitcoin node. After 
 | Electrum | Electrum (SSL) | Port 50001 listening      | Ready / Not ready                |
 | Sync     | Sync Progress  | Controller log monitoring | Synced / [sync progress message] |
 
-During initial sync, the Sync Progress health check displays real-time progress messages from Fulcrum's controller.
+During initial sync, the Sync Progress health check displays real-time progress messages from Fulcrum's controller. When sync first reaches `success` after install, a **Sync Complete** notification is posted to the StartOS notifications panel (fires once per install).
 
 ---
 

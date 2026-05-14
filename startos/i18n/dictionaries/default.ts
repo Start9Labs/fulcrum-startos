@@ -10,6 +10,8 @@ const dict = {
   'Sync Progress': 5,
   'Fulcrum is synced': 6,
   'Unknown status': 7,
+  'Sync Complete': 27,
+  'Fulcrum has finished building its address index. The Electrum server is ready.': 28,
   // interfaces.ts
   'The main interface for accessing Fulcrum via Electrum protocol through SSL': 8,
   // actions/configure.ts
