@@ -29,6 +29,8 @@ export default {
     24: 'Configuración',
     25: 'La poda debe estar deshabilitada, txindex y ZMQ deben estar habilitados para que Fulcrum funcione correctamente.',
     26: 'Predeterminado',
+    27: 'Sincronización completa',
+    28: 'Fulcrum ha terminado de construir su índice de direcciones. El servidor Electrum está listo.',
   },
   de_DE: {
     0: 'Fulcrum wird gestartet',
@@ -58,6 +60,8 @@ export default {
     24: 'Konfiguration',
     25: 'Das Beschneiden muss deaktiviert, txindex und ZMQ müssen aktiviert sein, damit Fulcrum ordnungsgemäß funktioniert.',
     26: 'Standard',
+    27: 'Synchronisierung abgeschlossen',
+    28: 'Fulcrum hat den Adressindex fertiggestellt. Der Electrum-Server ist bereit.',
   },
   pl_PL: {
     0: 'Uruchamianie Fulcrum',
@@ -87,6 +91,8 @@ export default {
     24: 'Konfiguracja',
     25: 'Przycinanie musi być wyłączone, txindex i ZMQ muszą być włączone, aby Fulcrum działał prawidłowo.',
     26: 'Domyślnie',
+    27: 'Synchronizacja zakończona',
+    28: 'Fulcrum zakończył budowanie indeksu adresów. Serwer Electrum jest gotowy.',
   },
   fr_FR: {
     0: 'Démarrage de Fulcrum',
@@ -116,5 +122,7 @@ export default {
     24: 'Configuration',
     25: "L'élagage doit être désactivé, txindex et ZMQ doivent être activés pour que Fulcrum fonctionne correctement.",
     26: 'Par défaut',
+    27: 'Synchronisation terminée',
+    28: "Fulcrum a terminé de construire son index d'adresses. Le serveur Electrum est prêt.",
   },
 } satisfies Record<string, LangDict>
