@@ -119,6 +119,9 @@ export const main = sdk.setupMain(async ({ effects }) => {
               ),
             })
             await storeJson.merge(effects, { syncNotified: true })
+            // Keep the in-memory guard in sync so a sync-progress dip and
+            // recovery within this run doesn't re-fire the notification.
+            store.syncNotified = true
           }
           return null
         },
