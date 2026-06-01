@@ -1,4 +1,5 @@
 import { sdk } from './sdk'
+import { FileHelper } from '@start9labs/start-sdk'
 import { i18n } from './i18n'
 import { electrumPort } from './utils'
 import { manifest as bitcoinManifest } from 'bitcoin-core-startos/startos/manifest'
@@ -13,27 +14,35 @@ export const main = sdk.setupMain(async ({ effects }) => {
   // var to keep track of sync progress
   let lastSyncLog: string | null = null
 
+  const primarySub = await sdk.SubContainer.of(
+    effects,
+    { imageId: 'main' },
+    sdk.Mounts.of()
+      .mountVolume({
+        volumeId: 'main',
+        subpath: null,
+        mountpoint: '/data',
+        readonly: false,
+      })
+      .mountDependency<typeof bitcoinManifest>({
+        dependencyId: 'bitcoind',
+        volumeId: 'main',
+        subpath: null,
+        mountpoint: '/mnt/bitcoind',
+        readonly: true,
+      }),
+    'primary-sub',
+  )
+
+  // Restart if Bitcoin .cookie changes (bitcoind regenerates it on every start,
+  // so a cached RPC cookie would otherwise go stale after a bitcoind restart).
+  await FileHelper.string(`${primarySub.rootfs}/mnt/bitcoind/.cookie`)
+    .read()
+    .const(effects)
+
   return sdk.Daemons.of(effects)
     .addDaemon('primary', {
-      subcontainer: await sdk.SubContainer.of(
-        effects,
-        { imageId: 'main' },
-        sdk.Mounts.of()
-          .mountVolume({
-            volumeId: 'main',
-            subpath: null,
-            mountpoint: '/data',
-            readonly: false,
-          })
-          .mountDependency<typeof bitcoinManifest>({
-            dependencyId: 'bitcoind',
-            volumeId: 'main',
-            subpath: null,
-            mountpoint: '/mnt/bitcoind',
-            readonly: true,
-          }),
-        'primary-sub',
-      ),
+      subcontainer: primarySub,
       exec: {
         command: ['Fulcrum', '--ts-format', 'none', '/data/fulcrum.conf'],
         // capture stdout and keep track of sync progress logs
