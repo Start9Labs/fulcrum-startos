@@ -1,11 +1,5 @@
 import { setupManifest } from '@start9labs/start-sdk'
-import {
-  alertInstall,
-  alertStart,
-  bitcoindDescription,
-  long,
-  short,
-} from './i18n'
+import { bitcoindDescription, long, short } from './i18n'
 
 export const manifest = setupManifest({
   id: 'fulcrum',
@@ -24,14 +18,6 @@ export const manifest = setupManifest({
       },
       arch: ['x86_64', 'aarch64'],
     },
-  },
-  alerts: {
-    install: alertInstall,
-    update: null,
-    uninstall: null,
-    restore: null,
-    start: alertStart,
-    stop: null,
   },
   dependencies: {
     bitcoind: {

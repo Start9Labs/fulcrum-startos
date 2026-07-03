@@ -12,6 +12,7 @@ const dict = {
   'Unknown status': 7,
   'Sync Complete': 27,
   'Fulcrum has finished building its address index. The Electrum server is ready.': 28,
+  'Bitcoin Core is not yet reachable on the internal network. Ensure it is installed and running.': 29,
   // interfaces.ts
   'The main interface for accessing Fulcrum via Electrum protocol through SSL': 8,
   // actions/configure.ts

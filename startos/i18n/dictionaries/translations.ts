@@ -31,6 +31,7 @@ export default {
     26: 'Predeterminado',
     27: 'Sincronización completa',
     28: 'Fulcrum ha terminado de construir su índice de direcciones. El servidor Electrum está listo.',
+    29: 'Bitcoin Core aún no es accesible en la red interna. Asegúrese de que esté instalado y en ejecución.',
   },
   de_DE: {
     0: 'Fulcrum wird gestartet',
@@ -62,6 +63,7 @@ export default {
     26: 'Standard',
     27: 'Synchronisierung abgeschlossen',
     28: 'Fulcrum hat den Adressindex fertiggestellt. Der Electrum-Server ist bereit.',
+    29: 'Bitcoin Core ist im internen Netzwerk noch nicht erreichbar. Stellen Sie sicher, dass es installiert ist und läuft.',
   },
   pl_PL: {
     0: 'Uruchamianie Fulcrum',
@@ -93,6 +95,7 @@ export default {
     26: 'Domyślnie',
     27: 'Synchronizacja zakończona',
     28: 'Fulcrum zakończył budowanie indeksu adresów. Serwer Electrum jest gotowy.',
+    29: 'Bitcoin Core nie jest jeszcze osiągalny w sieci wewnętrznej. Upewnij się, że jest zainstalowany i uruchomiony.',
   },
   fr_FR: {
     0: 'Démarrage de Fulcrum',
@@ -124,5 +127,6 @@ export default {
     26: 'Par défaut',
     27: 'Synchronisation terminée',
     28: "Fulcrum a terminé de construire son index d'adresses. Le serveur Electrum est prêt.",
+    29: "Bitcoin Core n'est pas encore accessible sur le réseau interne. Assurez-vous qu'il est installé et en cours d'exécution.",
   },
 } satisfies Record<string, LangDict>

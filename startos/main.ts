@@ -1,8 +1,9 @@
 import { sdk } from './sdk'
 import { i18n } from './i18n'
-import { electrumPort } from './utils'
+import { electrumPort, getBitcoindRpcHost } from './utils'
 import { manifest as bitcoinManifest } from 'bitcoin-core-startos/startos/manifest'
 import { storeJson } from './file-models/store.json'
+import { fulcrumConf } from './file-models/fulcrum.conf'
 
 export const main = sdk.setupMain(async ({ effects }) => {
   console.info(i18n('Starting Fulcrum'))
@@ -10,12 +11,24 @@ export const main = sdk.setupMain(async ({ effects }) => {
   const store = await storeJson.read().once()
   if (!store) throw new Error('No store')
 
+  // bitcoind's RPC is reached over the LXC bridge, not the deprecated
+  // `bitcoind.startos` DNS name — resolve it and pin it into fulcrum.conf.
+  const bitcoindRpc = await getBitcoindRpcHost(effects)
+  if (!bitcoindRpc) {
+    throw new Error(
+      i18n(
+        'Bitcoin Core is not yet reachable on the internal network. Ensure it is installed and running.',
+      ),
+    )
+  }
+  await fulcrumConf.merge(effects, { bitcoind: bitcoindRpc })
+
   // var to keep track of sync progress
   let lastSyncLog: string | null = null
 
   return sdk.Daemons.of(effects)
     .addDaemon('primary', {
-      subcontainer: await sdk.SubContainer.of(
+      subcontainer: sdk.SubContainer.of(
         effects,
         { imageId: 'main' },
         sdk.Mounts.of()

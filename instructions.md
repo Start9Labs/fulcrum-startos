@@ -4,6 +4,11 @@
 
 - [Fulcrum documentation](https://github.com/cculianu/Fulcrum/tree/master/doc) — the upstream documentation covering configuration, operation, and tuning.
 
+## Requirements & upgrade notes
+
+- **StartOS 0.4.0-beta.10 or later is required.** Fulcrum now reaches Bitcoin Core over StartOS's internal LXC bridge instead of the deprecated `.startos` hostname, which needs the beta.10 backend.
+- **Fulcrum is resource-intensive.** Expect 2 GB+ of RAM during the initial sync and 180 GB+ for the address indexes. Combined with a full Bitcoin Core node (~800 GB), total storage requirements exceed 1 TB — a 2 TB drive is strongly recommended. Insufficient resources may cause system instability or failure.
+
 ## What you get on StartOS
 
 - A high-performance **Electrum server** indexing your own Bitcoin Core node, exposed as the **Electrum (SSL)** interface for wallets to connect to.
