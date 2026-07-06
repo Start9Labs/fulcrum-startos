@@ -6,7 +6,10 @@ export const setDependencies = sdk.setupDependencies(async ({ effects }) => {
   await sdk.action.createTask(effects, 'bitcoind', autoconfig, 'critical', {
     input: {
       kind: 'partial',
-      accept: [{ prune: 0, txindex: true, zmqEnabled: true }],
+      accept: [
+        { prune: 0, txindex: true, zmqEnabled: true },
+        { prune: null, txindex: true, zmqEnabled: true },
+      ],
       set: { prune: 0, txindex: true, zmqEnabled: true },
     },
     reason: i18n(

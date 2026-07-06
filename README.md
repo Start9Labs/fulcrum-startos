@@ -58,7 +58,7 @@
 
 **Bitcoin dependency mount:**
 
-- `/mnt/bitcoind` — Bitcoin Core volume (read-only, for cookie auth)
+- `/mnt/bitcoind` — Bitcoin volume (read-only, for cookie auth)
 
 ---
 
@@ -68,13 +68,13 @@
 | ------------- | ---------------------------- | ----------------------------------- |
 | Installation  | Manual binary/Docker setup   | Install from marketplace            |
 | Configuration | Edit `fulcrum.conf` manually | Auto-configured, tunable via action |
-| Bitcoin Core  | Manual RPC configuration     | Auto-configured via dependency      |
+| Bitcoin       | Manual RPC configuration     | Auto-configured via dependency      |
 
 **Install alert:** Fulcrum requires significant resources: 2GB+ RAM during sync and 180GB+ for indexes. Combined with a Bitcoin node (~800GB), total storage exceeds 1TB. A 2TB drive is strongly recommended.
 
 **First-run steps:**
 
-1. Ensure Bitcoin Core is installed with txindex enabled (auto-configured)
+1. Ensure Bitcoin is installed with txindex enabled (auto-configured)
 2. Install Fulcrum from the StartOS marketplace
 3. Wait for initial sync to complete (can take many hours)
 
@@ -139,7 +139,7 @@ Connect wallets using the Electrum protocol (e.g., Sparrow, Electrum, BlueWallet
 
 - **Server Banner** — custom ASCII art banner for Electrum clients (max 2000 chars)
 - **Bitcoin RPC Timeout** — seconds to wait for RPC responses (min 30)
-- **Bitcoin RPC Clients** — concurrent connections to Bitcoin Core (min 1)
+- **Bitcoin RPC Clients** — concurrent connections to Bitcoin (min 1)
 - **Worker Threads** — 0 for auto-detect
 - **Database Memory** — RocksDB cache in MB (min 50)
 - **Database Max Open Files** — raise if Fulcrum logs file handle errors (min 20)
@@ -148,7 +148,7 @@ Connect wallets using the Electrum protocol (e.g., Sparrow, Electrum, BlueWallet
 
 ## Dependencies
 
-### Bitcoin Core (required)
+### Bitcoin (required)
 
 | Property | Value |
 |----------|-------|
@@ -157,7 +157,7 @@ Connect wallets using the Electrum protocol (e.g., Sparrow, Electrum, BlueWallet
 | Mounted volumes | `main` → `/mnt/bitcoind` (read-only) |
 | Purpose | Blockchain data via RPC and cookie authentication |
 
-StartOS creates a critical task on Bitcoin Core to enforce required settings: `prune=0`, `txindex=true`, `zmqEnabled=true`.
+StartOS creates a critical task on Bitcoin to enforce required settings: `prune=0`, `txindex=true`, `zmqEnabled=true`.
 
 ---
 

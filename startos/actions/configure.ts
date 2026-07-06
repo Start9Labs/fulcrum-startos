@@ -33,7 +33,7 @@ const inputSpec = InputSpec.of({
   bitcoind_clients: Value.number({
     name: i18n('Bitcoin RPC Clients'),
     description: i18n(
-      'Number of concurrent RPC client connections to Bitcoin Core.',
+      'Number of concurrent RPC client connections to Bitcoin.',
     ),
     required: false,
     default: null,

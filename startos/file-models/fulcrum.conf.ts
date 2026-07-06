@@ -8,12 +8,10 @@ const iniNumber = z
 
 export const shape = z.object({
   datadir: z.literal('/data').catch('/data'),
-  bitcoind: z.string().catch('127.0.0.1:8332'),
+  bitcoind: z.string().optional().catch(undefined),
   rpcuser: z.literal('').catch(''),
   rpcpassword: z.literal('').catch(''),
-  rpccookie: z
-    .literal('/mnt/bitcoind/.cookie')
-    .catch('/mnt/bitcoind/.cookie'),
+  rpccookie: z.literal('/mnt/bitcoind/.cookie').catch('/mnt/bitcoind/.cookie'),
   tcp: z.literal('0.0.0.0:50001').catch('0.0.0.0:50001'),
   peering: z.literal(false).catch(false),
   announce: z.literal(false).catch(false),

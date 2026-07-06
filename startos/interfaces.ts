@@ -19,7 +19,9 @@ export const setInterfaces = sdk.setupInterfaces(async ({ effects }) => {
   const electrum = sdk.createInterface(effects, {
     id: 'main',
     name: i18n('Electrum (SSL)'),
-    description: i18n('The main interface for accessing Fulcrum via Electrum protocol through SSL'),
+    description: i18n(
+      'The main interface for accessing Fulcrum via Electrum protocol through SSL',
+    ),
     type: 'api',
     masked: false,
     schemeOverride: null,

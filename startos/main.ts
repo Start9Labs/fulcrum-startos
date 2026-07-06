@@ -16,16 +16,15 @@ export const main = sdk.setupMain(async ({ effects }) => {
   // `bitcoind.startos` DNS name. The mapped bridge address only changes when
   // the address itself does, so this .const() restarts Fulcrum exactly on
   // bitcoind install/uninstall/port-change and never on bitcoind updates.
-  // While bitcoind is absent the address resolves null; we pin a loopback
-  // placeholder and the .const() heals (one restart) when bitcoind appears.
+  // While bitcoind is absent the address resolves null and we omit the
+  // `bitcoind` line; the .const() heals (one restart), writing the real
+  // address, when bitcoind appears.
   const bitcoindRpc = await bridgeAddress(effects, {
     packageId: 'bitcoind',
     hostId: rpcHostId,
     internalPort: rpcPort,
   }).const()
-  await fulcrumConf.merge(effects, {
-    bitcoind: bitcoindRpc ?? `127.0.0.1:${rpcPort}`,
-  })
+  await fulcrumConf.merge(effects, { bitcoind: bitcoindRpc ?? undefined })
 
   // var to keep track of sync progress
   let lastSyncLog: string | null = null
