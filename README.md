@@ -87,7 +87,7 @@
 | Setting     | Value                   | Purpose                       |
 | ----------- | ----------------------- | ----------------------------- |
 | `datadir`   | `/data`                 | Data directory                |
-| `bitcoind`  | `bitcoind.startos:8332` | Bitcoin RPC connection        |
+| `bitcoind`  | (LXC bridge address)    | Bitcoin RPC connection (resolved dynamically over the internal bridge) |
 | `rpccookie` | `/mnt/bitcoind/.cookie` | Bitcoin cookie auth           |
 | `tcp`       | `0.0.0.0:50001`         | Electrum protocol listener    |
 | `peering`   | `false`                 | Peer discovery disabled       |

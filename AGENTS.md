@@ -11,7 +11,7 @@ Work this package's `TODO.md` from top to bottom. Keep `README.md` (architecture
 ## This repo
 
 - **Package id is `fulcrum`.** A high-performance Electrum server exposing the **Electrum (SSL)** interface (host id `main`), with a hard dependency on Bitcoin Core (`bitcoind`, `optional: false`).
-- **Reaching bitcoind's RPC goes through the LXC bridge**, not `bitcoind.startos` DNS. `getBitcoindRpcHost` (`startos/utils.ts`) resolves the address inside a `sdk.host.get` map fn, and `main.ts` pins it into `fulcrum.conf`'s `bitcoind` field before starting the daemon (throwing if bitcoind isn't yet reachable). bitcoind's host/interface ids are imported from `bitcoin-core-startos/startos/utils`, never hardcoded.
+- **Reaching bitcoind's RPC goes through the LXC bridge**, not `bitcoind.startos` DNS. `main.ts` resolves the address via the reactive `bridgeAddress` helper (`startos/utils.ts`) chained with `.const()`, then pins it into `fulcrum.conf`'s `bitcoind` field before starting the daemon. The helper maps to `host.bindings[rpcPort].net.assignedPort`, so the `.const()` restarts Fulcrum only on bitcoind install/uninstall/port-change, never on bitcoind updates. While bitcoind is absent the address is `null`; `main.ts` pins a `127.0.0.1:<rpcPort>` loopback placeholder and the `.const()` heals (one restart) when bitcoind appears. bitcoind's host id and internal RPC port are imported from `bitcoin-core-startos/startos/utils`, never hardcoded.
 
 ## Inspecting a running install
 

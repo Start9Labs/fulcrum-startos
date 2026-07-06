@@ -8,7 +8,7 @@ const iniNumber = z
 
 export const shape = z.object({
   datadir: z.literal('/data').catch('/data'),
-  bitcoind: z.string().catch('bitcoind.startos:8332'),
+  bitcoind: z.string().catch('127.0.0.1:8332'),
   rpcuser: z.literal('').catch(''),
   rpcpassword: z.literal('').catch(''),
   rpccookie: z
