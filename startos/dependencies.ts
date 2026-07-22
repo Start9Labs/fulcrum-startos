@@ -6,11 +6,8 @@ export const setDependencies = sdk.setupDependencies(async ({ effects }) => {
   await sdk.action.createTask(effects, 'bitcoind', autoconfig, 'critical', {
     input: {
       kind: 'partial',
-      value: {
-        prune: 0,
-        txindex: true,
-        zmqEnabled: true,
-      },
+      accept: [{ prune: 0, txindex: true, zmqEnabled: true }],
+      set: { prune: 0, txindex: true, zmqEnabled: true },
     },
     reason: i18n(
       'Pruning must be disabled, txindex and ZMQ must be enabled for Fulcrum to function properly.',
@@ -21,7 +18,7 @@ export const setDependencies = sdk.setupDependencies(async ({ effects }) => {
   return {
     bitcoind: {
       kind: 'running',
-      versionRange: '>=28.3:8',
+      versionRange: '>=28.4:13',
       healthChecks: ['bitcoind'],
     },
   }

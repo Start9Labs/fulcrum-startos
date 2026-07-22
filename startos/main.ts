@@ -1,8 +1,10 @@
 import { sdk } from './sdk'
 import { i18n } from './i18n'
-import { electrumPort } from './utils'
+import { electrumPort, bridgeAddress } from './utils'
 import { manifest as bitcoinManifest } from 'bitcoin-core-startos/startos/manifest'
+import { rpcHostId, rpcPort } from 'bitcoin-core-startos/startos/utils'
 import { storeJson } from './file-models/store.json'
+import { fulcrumConf } from './file-models/fulcrum.conf'
 
 export const main = sdk.setupMain(async ({ effects }) => {
   console.info(i18n('Starting Fulcrum'))
@@ -10,12 +12,26 @@ export const main = sdk.setupMain(async ({ effects }) => {
   const store = await storeJson.read().once()
   if (!store) throw new Error('No store')
 
+  // bitcoind's RPC is reached over the LXC bridge, not the deprecated
+  // `bitcoind.startos` DNS name. The mapped bridge address only changes when
+  // the address itself does, so this .const() restarts Fulcrum exactly on
+  // bitcoind install/uninstall/port-change and never on bitcoind updates.
+  // While bitcoind is absent the address resolves null and we omit the
+  // `bitcoind` line; the .const() heals (one restart), writing the real
+  // address, when bitcoind appears.
+  const bitcoindRpc = await bridgeAddress(effects, {
+    packageId: 'bitcoind',
+    hostId: rpcHostId,
+    internalPort: rpcPort,
+  }).const()
+  await fulcrumConf.merge(effects, { bitcoind: bitcoindRpc ?? undefined })
+
   // var to keep track of sync progress
   let lastSyncLog: string | null = null
 
   return sdk.Daemons.of(effects)
     .addDaemon('primary', {
-      subcontainer: await sdk.SubContainer.of(
+      subcontainer: sdk.SubContainer.of(
         effects,
         { imageId: 'main' },
         sdk.Mounts.of()

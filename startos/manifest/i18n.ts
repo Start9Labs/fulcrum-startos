@@ -32,17 +32,3 @@ export const long = {
     "Fulcrum est un serveur Electrum haute performance qui indexe la blockchain Bitcoin depuis votre propre nœud Bitcoin. Cela vous permet de connecter des portefeuilles matériels et logiciels à votre propre nœud, garantissant confidentialité et sécurité. En servant de pont entre votre portefeuille et votre nœud, Fulcrum offre un moyen rapide, fiable et privé de gérer vos Bitcoin.",
 }
 
-export const alertInstall = {
-  en_US:
-    'WARNING: Fulcrum requires significant system resources: 2GB+ RAM during sync and 180GB+ for indexes. When combined with a Bitcoin node (~800GB), total storage requirements exceed 1TB. A 2TB drive is strongly recommended. Insufficient resources may cause system instability or failure.',
-  es_ES:
-    'ADVERTENCIA: Fulcrum requiere recursos significativos del sistema: más de 2 GB de RAM durante la sincronización y más de 180 GB para los índices. Combinado con un nodo Bitcoin (~800 GB), los requisitos totales de almacenamiento superan 1 TB. Se recomienda encarecidamente un disco de 2 TB. Los recursos insuficientes pueden causar inestabilidad o fallos del sistema.',
-  de_DE:
-    'WARNUNG: Fulcrum benötigt erhebliche Systemressourcen: 2 GB+ RAM während der Synchronisierung und 180 GB+ für Indizes. In Kombination mit einem Bitcoin-Knoten (~800 GB) übersteigen die Gesamtspeicheranforderungen 1 TB. Eine 2-TB-Festplatte wird dringend empfohlen. Unzureichende Ressourcen können zu Systeminstabilität oder Ausfällen führen.',
-  pl_PL:
-    'OSTRZEŻENIE: Fulcrum wymaga znacznych zasobów systemowych: ponad 2 GB RAM podczas synchronizacji i ponad 180 GB na indeksy. W połączeniu z węzłem Bitcoin (~800 GB) całkowite wymagania dotyczące pamięci masowej przekraczają 1 TB. Zdecydowanie zaleca się dysk 2 TB. Niewystarczające zasoby mogą powodować niestabilność lub awarię systemu.',
-  fr_FR:
-    "ATTENTION : Fulcrum nécessite des ressources système importantes : plus de 2 Go de RAM pendant la synchronisation et plus de 180 Go pour les index. Combiné avec un nœud Bitcoin (~800 Go), les besoins totaux de stockage dépassent 1 To. Un disque de 2 To est fortement recommandé. Des ressources insuffisantes peuvent provoquer une instabilité ou une défaillance du système.",
-}
-
-export const alertStart = alertInstall
