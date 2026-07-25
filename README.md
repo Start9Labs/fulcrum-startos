@@ -152,7 +152,7 @@ Connect wallets using the Electrum protocol (e.g., Sparrow, Electrum, BlueWallet
 
 | Property           | Value                                             |
 | ------------------ | ------------------------------------------------- |
-| Version constraint | `>=28.3`                                          |
+| Version constraint | Declared in `startos/dependencies.ts`             |
 | Health checks      | `bitcoind` must pass before Fulcrum starts        |
 | Mounted volumes    | `main` → `/mnt/bitcoind` (read-only)              |
 | Purpose            | Blockchain data via RPC and cookie authentication |
@@ -212,7 +212,7 @@ During initial sync, the Sync Progress health check displays real-time progress 
 
 ## Contributing
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for build instructions and development workflow.
+Build and development workflow follow the StartOS packaging guide: <https://docs.start9.com/packaging>. Keep `README.md`, `instructions.md`, and `AGENTS.md` in sync with any change to user-visible behavior or package structure.
 
 ---
 

@@ -13,8 +13,8 @@ export const main = sdk.setupMain(async ({ effects }) => {
   if (!store) throw new Error('No store')
 
   // bitcoind's RPC is reached over the LXC bridge, not the deprecated
-  // `bitcoind.startos` DNS name. The mapped bridge address only changes when
-  // the address itself does, so this .const() restarts Fulcrum exactly on
+  // `bitcoind.startos` DNS name. The bridge address only changes when
+  // bitcoind's binding does, so this .const() restarts Fulcrum exactly on
   // bitcoind install/uninstall/port-change and never on bitcoind updates.
   // While bitcoind is absent the address resolves null and we omit the
   // `bitcoind` line; the .const() heals (one restart), writing the real
