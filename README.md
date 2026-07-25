@@ -84,14 +84,14 @@
 
 ### Auto-Configured by StartOS
 
-| Setting     | Value                   | Purpose                       |
-| ----------- | ----------------------- | ----------------------------- |
-| `datadir`   | `/data`                 | Data directory                |
+| Setting     | Value                   | Purpose                                                                |
+| ----------- | ----------------------- | ---------------------------------------------------------------------- |
+| `datadir`   | `/data`                 | Data directory                                                         |
 | `bitcoind`  | (LXC bridge address)    | Bitcoin RPC connection (resolved dynamically over the internal bridge) |
-| `rpccookie` | `/mnt/bitcoind/.cookie` | Bitcoin cookie auth           |
-| `tcp`       | `0.0.0.0:50001`         | Electrum protocol listener    |
-| `peering`   | `false`                 | Peer discovery disabled       |
-| `announce`  | `false`                 | Network announcement disabled |
+| `rpccookie` | `/mnt/bitcoind/.cookie` | Bitcoin cookie auth                                                    |
+| `tcp`       | `0.0.0.0:50001`         | Electrum protocol listener                                             |
+| `peering`   | `false`                 | Peer discovery disabled                                                |
+| `announce`  | `false`                 | Network announcement disabled                                          |
 
 ### Configurable via Action
 
@@ -150,12 +150,12 @@ Connect wallets using the Electrum protocol (e.g., Sparrow, Electrum, BlueWallet
 
 ### Bitcoin (required)
 
-| Property | Value |
-|----------|-------|
-| Version constraint | `>=28.3` |
-| Health checks | `bitcoind` must pass before Fulcrum starts |
-| Mounted volumes | `main` → `/mnt/bitcoind` (read-only) |
-| Purpose | Blockchain data via RPC and cookie authentication |
+| Property           | Value                                             |
+| ------------------ | ------------------------------------------------- |
+| Version constraint | `>=28.3`                                          |
+| Health checks      | `bitcoind` must pass before Fulcrum starts        |
+| Mounted volumes    | `main` → `/mnt/bitcoind` (read-only)              |
+| Purpose            | Blockchain data via RPC and cookie authentication |
 
 StartOS creates a critical task on Bitcoin to enforce required settings: `prune=0`, `txindex=true`, `zmqEnabled=true`.
 
