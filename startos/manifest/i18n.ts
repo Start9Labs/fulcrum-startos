@@ -1,9 +1,11 @@
 export const bitcoindDescription = {
   en_US: 'Provides Bitcoin network connection and blockchain data.',
-  es_ES: 'Proporciona conexión a la red Bitcoin y datos de la cadena de bloques.',
+  es_ES:
+    'Proporciona conexión a la red Bitcoin y datos de la cadena de bloques.',
   de_DE: 'Bietet Bitcoin-Netzwerkverbindung und Blockchain-Daten.',
   pl_PL: 'Zapewnia połączenie z siecią Bitcoin i dane łańcucha bloków.',
-  fr_FR: 'Fournit la connexion au réseau Bitcoin et les données de la blockchain.',
+  fr_FR:
+    'Fournit la connexion au réseau Bitcoin et les données de la blockchain.',
 }
 
 export const short = {
@@ -29,6 +31,5 @@ export const long = {
   pl_PL:
     'Fulcrum to wysokowydajny serwer Electrum, który indeksuje łańcuch bloków Bitcoin z własnego węzła Bitcoin. Pozwala to na podłączenie portfeli sprzętowych i programowych do własnego węzła, zapewniając prywatność i bezpieczeństwo. Działając jako most między portfelem a węzłem, Fulcrum zapewnia szybki, niezawodny i prywatny sposób zarządzania Bitcoinem.',
   fr_FR:
-    "Fulcrum est un serveur Electrum haute performance qui indexe la blockchain Bitcoin depuis votre propre nœud Bitcoin. Cela vous permet de connecter des portefeuilles matériels et logiciels à votre propre nœud, garantissant confidentialité et sécurité. En servant de pont entre votre portefeuille et votre nœud, Fulcrum offre un moyen rapide, fiable et privé de gérer vos Bitcoin.",
+    'Fulcrum est un serveur Electrum haute performance qui indexe la blockchain Bitcoin depuis votre propre nœud Bitcoin. Cela vous permet de connecter des portefeuilles matériels et logiciels à votre propre nœud, garantissant confidentialité et sécurité. En servant de pont entre votre portefeuille et votre nœud, Fulcrum offre un moyen rapide, fiable et privé de gérer vos Bitcoin.',
 }
-

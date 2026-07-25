@@ -1,6 +1,6 @@
 import { sdk } from './sdk'
 import { i18n } from './i18n'
-import { electrumPort, bridgeAddress } from './utils'
+import { electrumPort } from './utils'
 import { manifest as bitcoinManifest } from 'bitcoin-core-startos/startos/manifest'
 import { rpcHostId, rpcPort } from 'bitcoin-core-startos/startos/utils'
 import { storeJson } from './file-models/store.json'
@@ -19,11 +19,14 @@ export const main = sdk.setupMain(async ({ effects }) => {
   // While bitcoind is absent the address resolves null and we omit the
   // `bitcoind` line; the .const() heals (one restart), writing the real
   // address, when bitcoind appears.
-  const bitcoindRpc = await bridgeAddress(effects, {
-    packageId: 'bitcoind',
-    hostId: rpcHostId,
-    internalPort: rpcPort,
-  }).const()
+  const bitcoindRpc = await sdk.host
+    .getBridgeAddress(effects, {
+      packageId: 'bitcoind',
+      hostId: rpcHostId,
+      internalPort: rpcPort,
+      ssl: false,
+    })
+    .const()
   await fulcrumConf.merge(effects, { bitcoind: bitcoindRpc ?? undefined })
 
   // var to keep track of sync progress
