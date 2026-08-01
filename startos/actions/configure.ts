@@ -87,10 +87,21 @@ export const configure = sdk.Action.withInput(
     visibility: 'enabled',
   }),
   inputSpec,
-  async ({ effects }) => ({
-    banner: (await bannerTxt.read().once()) || undefined,
-    ...(await fulcrumConf.read().once()),
-  }),
+  // Only the keys this spec declares. Spreading the whole config prefilled the
+  // banner field with `fulcrum.conf`'s own `banner` key — the path to
+  // `banner.txt` rather than its contents — which any subsequent save then
+  // wrote into `banner.txt` and served to connecting clients.
+  async () => {
+    const conf = await fulcrumConf.read().once()
+    return {
+      banner: (await bannerTxt.read().once()) || undefined,
+      bitcoind_timeout: conf?.bitcoind_timeout,
+      bitcoind_clients: conf?.bitcoind_clients,
+      worker_threads: conf?.worker_threads,
+      db_mem: conf?.db_mem,
+      db_max_open_files: conf?.db_max_open_files,
+    }
+  },
   async ({ effects, input }) => {
     const { banner, ...conf } = input
     if (banner) await bannerTxt.write(effects, banner)
