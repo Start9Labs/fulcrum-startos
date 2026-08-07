@@ -12,6 +12,7 @@ const dict = {
   'Unknown status': 7,
   'Sync Complete': 27,
   'Fulcrum has finished building its address index. The Electrum server is ready.': 28,
+  'Fulcrum has finished building its address index. It is restarting once to apply a lower database memory setting, after which the Electrum server is ready.': 29,
   // interfaces.ts
   'The main interface for accessing Fulcrum via Electrum protocol through SSL': 8,
   // actions/configure.ts
@@ -27,7 +28,7 @@ const dict = {
   'Worker Threads (0 for auto)': 18,
   'Set the number of Fulcrum worker threads. Use 0 to allow Fulcrum to choose automatically.': 19,
   'Database Memory (MB)': 20,
-  'Upper bound on memory used by the RocksDB cache. Increase for faster queries at the cost of RAM.': 21,
+  'Upper bound on memory used by the RocksDB cache. Set at install for the index build and lowered automatically once the index is complete. Raise it for faster queries at the cost of RAM.': 21,
   'Database Max Open Files': 22,
   'Raise this if Fulcrum logs complaints about too many open files.': 23,
   Configuration: 24,
