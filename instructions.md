@@ -6,7 +6,7 @@
 
 ## Requirements
 
-- **Fulcrum is resource-intensive.** Expect 2 GB+ of RAM during the initial sync and 180 GB+ for the address indexes. Combined with a full Bitcoin node (~800 GB), total storage requirements exceed 1 TB — a 2 TB drive is strongly recommended. Insufficient resources may cause system instability or failure.
+- **Fulcrum is resource-intensive.** It reserves up to a quarter of your server's RAM (never more than 2 GB) while building its address index, drops to 512 MB once the index is complete, and needs more on top of that for its own working memory — all while sharing the machine with the Bitcoin node it depends on. The indexes need 180 GB+; combined with a full Bitcoin node (~800 GB), total storage requirements exceed 1 TB, so a 2 TB drive is strongly recommended. Insufficient resources may cause system instability or failure.
 
 ## What you get on StartOS
 
@@ -35,8 +35,10 @@ Run the **Configure** action to set:
 - **Server Banner** — custom text shown to connecting Electrum clients.
 - **Bitcoin RPC Timeout**, **Bitcoin RPC Clients** — how Fulcrum talks to Bitcoin.
 - **Worker Threads** — leave at `0` to let Fulcrum auto-detect, or pin a specific number.
-- **Database Memory** — the RocksDB cache size in MiB. Raise it to trade RAM for faster queries.
+- **Database Memory** — the RocksDB cache size in MiB. StartOS sets this for you at install and lowers it to 512 once the index is built, so you should not need to touch it; raise it to trade RAM for faster queries. Once you set it yourself, StartOS stops adjusting it.
 - **Database Max Open Files** — raise this if the logs complain about too many open files.
+
+Saving Configure restarts Fulcrum, because it only reads its configuration at startup.
 
 ## Limitations
 

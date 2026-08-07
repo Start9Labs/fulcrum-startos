@@ -4,7 +4,11 @@ import { electrumPort } from './utils'
 import { manifest as bitcoinManifest } from 'bitcoin-core-startos/startos/manifest'
 import { rpcHostId, rpcPort } from 'bitcoin-core-startos/startos/utils'
 import { storeJson } from './file-models/store.json'
-import { fulcrumConf } from './file-models/fulcrum.conf'
+import {
+  defaultDbMem,
+  fulcrumConf,
+  syncedDbMem,
+} from './file-models/fulcrum.conf'
 
 export const main = sdk.setupMain(async ({ effects }) => {
   console.info(i18n('Starting Fulcrum'))
@@ -28,6 +32,13 @@ export const main = sdk.setupMain(async ({ effects }) => {
     })
     .const()
   await fulcrumConf.merge(effects, { bitcoind: bitcoindRpc ?? undefined })
+
+  // Consted *after* the merge above so that write is already part of the
+  // captured value — consting first would see its own `bitcoind` write as a
+  // change. Fulcrum reads fulcrum.conf only at startup, so every later change
+  // (a Configure save, the post-sync db_mem drop below) has to restart the
+  // daemon to take effect, which is exactly what this const does.
+  const conf = await fulcrumConf.read().const(effects)
 
   // var to keep track of sync progress
   let lastSyncLog: string | null = null
@@ -130,17 +141,36 @@ export const main = sdk.setupMain(async ({ effects }) => {
       exec: {
         fn: async () => {
           if (!store.syncNotified) {
+            // Only reclaim what we ourselves seeded — a value the user picked
+            // in Configure is theirs to keep.
+            const lowerDbMem =
+              conf?.db_mem === defaultDbMem() && syncedDbMem() < defaultDbMem()
+
             await sdk.notification.create(effects, {
               level: 'success',
               title: i18n('Sync Complete'),
-              message: i18n(
-                'Fulcrum has finished building its address index. The Electrum server is ready.',
-              ),
+              message: lowerDbMem
+                ? i18n(
+                    'Fulcrum has finished building its address index. It is restarting once to apply a lower database memory setting, after which the Electrum server is ready.',
+                  )
+                : i18n(
+                    'Fulcrum has finished building its address index. The Electrum server is ready.',
+                  ),
             })
             await storeJson.merge(effects, { syncNotified: true })
             // Keep the in-memory guard in sync so a sync-progress dip and
             // recovery within this run doesn't re-fire the notification.
             store.syncNotified = true
+
+            // Restarts main via the const above. syncNotified is already
+            // persisted, so the rerun skips this block rather than looping.
+            if (lowerDbMem) {
+              await fulcrumConf.merge(
+                effects,
+                { db_mem: syncedDbMem() },
+                { allowWriteAfterConst: true },
+              )
+            }
           }
           return null
         },
