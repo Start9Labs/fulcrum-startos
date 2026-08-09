@@ -1,7 +1,7 @@
 import { utils } from '@start9labs/start-sdk'
 import { sdk } from '../sdk'
 import { i18n } from '../i18n'
-import { fulcrumConf } from '../file-models/fulcrum.conf'
+import { defaultDbMem, fulcrumConf } from '../file-models/fulcrum.conf'
 import { bannerTxt } from '../file-models/banner.txt'
 
 const { InputSpec, Value } = sdk
@@ -55,13 +55,13 @@ const inputSpec = InputSpec.of({
   db_mem: Value.number({
     name: i18n('Database Memory (MB)'),
     description: i18n(
-      'Upper bound on memory used by the RocksDB cache. Increase for faster queries at the cost of RAM.',
+      'Upper bound on memory used by the RocksDB cache. Set at install for the index build and lowered automatically once the index is complete. Raise it for faster queries at the cost of RAM.',
     ),
     required: false,
     default: null,
     integer: true,
     min: 50,
-    footnote: `${i18n('Default')}: 2048 MiB`,
+    footnote: `${i18n('Default')}: ${defaultDbMem()} MiB`,
   }),
   db_max_open_files: Value.number({
     name: i18n('Database Max Open Files'),

@@ -1,5 +1,11 @@
 import { FileHelper, z } from '@start9labs/start-sdk'
+import { totalmem } from 'os'
 import { sdk } from '../sdk'
+
+export const defaultDbMem = () =>
+  Math.min(Math.floor((totalmem() * 0.25) / (1024 * 1024)), 2048)
+
+export const syncedDbMem = () => Math.min(512, defaultDbMem())
 
 const iniNumber = z
   .union([z.string().transform(Number), z.number()])
