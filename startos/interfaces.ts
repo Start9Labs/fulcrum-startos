@@ -4,6 +4,9 @@ import { electrumPort, mainHostId } from './utils'
 
 export const setInterfaces = sdk.setupInterfaces(async ({ effects }) => {
   const multiHost = sdk.MultiHost.of(effects, mainHostId)
+  // secure: null still allocates a plaintext external port. It is reachable
+  // over lxcbr0 — the address dependents resolve — and from nowhere else, so
+  // off the box the TLS one is all there is.
   const electrumOrigin = await multiHost.bindPort(electrumPort, {
     protocol: null,
     addSsl: {
@@ -24,7 +27,9 @@ export const setInterfaces = sdk.setupInterfaces(async ({ effects }) => {
     ),
     type: 'api',
     masked: false,
-    schemeOverride: null,
+    // protocol: null leaves the origin scheme-less, which renders every address
+    // as a bare host:port with nothing marking it as TLS.
+    schemeOverride: { ssl: 'ssl', noSsl: 'tcp' },
     username: null,
     path: '',
     query: {},

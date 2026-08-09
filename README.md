@@ -118,7 +118,11 @@ The reduction only applies when the value on disk is still exactly what `default
 
 | Interface      | Internal Port | Preferred External Port | Protocol | Purpose           |
 | -------------- | ------------- | ----------------------- | -------- | ----------------- |
-| Electrum (SSL) | 50001         | 50002                   | TCP+SSL  | Electrum protocol |
+| Electrum (SSL) | 50001         | 50002 (TLS)             | TCP+SSL  | Electrum protocol |
+
+Fulcrum listens unencrypted on 50001 inside the container and StartOS terminates TLS in front of it (`addSsl` on the bind, `secure: null`). **TLS is the only way in from off the box** — LAN, `.local`, domains and Tor alike — which is what makes **Electrum (SSL)** an accurate name. A plaintext external port is allocated too. It is reachable at the bridge IP by the host and by other services over `lxcbr0` — source-filtered to that subnet — and from nowhere else; no LAN or WAN gateway gets a forward for it. That is the address `getBridgeAddress(…, { ssl: false })` hands to dependents, and it is what replaced the retired `fulcrum.startos` DNS name. `schemeOverride: { ssl: 'ssl', noSsl: 'tcp' }` is what renders an address as `ssl://host:port`; without it a `protocol: null` bind prints a bare `host:port` with nothing marking it as TLS.
+
+**The external port is per-server.** `preferredExternalPort` is a preference, and whatever StartOS assigns is permanent — an existing binding never changes its external port; only uninstall and reinstall reassigns. Never name a literal external port in user-facing docs; read the live values with `start-cli package host binding list fulcrum main`.
 
 **Access methods (StartOS 0.4.0):**
 

@@ -26,7 +26,11 @@ Fulcrum requires Bitcoin with `prune=0`, `txindex=true`, and ZMQ enabled. StartO
 
 ### Connecting a wallet
 
-Open the **Electrum (SSL)** interface and copy the address to your wallet (Sparrow, Electrum, BlueWallet, etc.). The interface speaks the Electrum protocol over SSL; StartOS handles the certificate and exposes the interface over LAN, Tor, and any custom domain you have attached.
+Open the **Electrum (SSL)** interface and copy an address into your wallet (Sparrow, Electrum, BlueWallet, etc.). It is shown as an `ssl://` URL, and the host and port in it are what your wallet needs — **take the port from that address rather than assuming one**, since StartOS assigns it and it is not always the same number on every server.
+
+Make sure your wallet's SSL option is on: in Sparrow that is *Private Electrum → Use SSL*, and in Electrum it is the `s` suffix on the server entry. Connecting with SSL off fails with a generic error such as "Retries exhausted" rather than anything naming TLS.
+
+StartOS handles the certificate (it is issued by your device's StartOS root CA) and exposes the interface over LAN, `.local`, Tor, and any custom domain you have attached.
 
 ### Configure
 
