@@ -75,6 +75,17 @@ const inputSpec = InputSpec.of({
     min: 20,
     footnote: `${i18n('Default')}: 1000`,
   }),
+  max_history: Value.number({
+    name: i18n('Max Address History'),
+    description: i18n(
+      'Largest number of transactions Fulcrum will report for a single address. An address busier than this returns an empty or partial history, balance and coin list rather than an error, so a wallet holding one shows the funds as missing. Raise this if an address you use has a very long history; the limit exists to bound the memory and time a single request can cost.',
+    ),
+    required: false,
+    default: null,
+    integer: true,
+    min: 1000,
+    max: 25_000_000,
+  }),
 })
 
 export const configure = sdk.Action.withInput(
@@ -101,6 +112,7 @@ export const configure = sdk.Action.withInput(
       worker_threads: conf?.worker_threads,
       db_mem: conf?.db_mem,
       db_max_open_files: conf?.db_max_open_files,
+      max_history: conf?.max_history,
     }
   },
   async ({ effects, input }) => {
