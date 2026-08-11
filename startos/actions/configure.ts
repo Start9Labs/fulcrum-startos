@@ -1,4 +1,5 @@
 import { utils } from '@start9labs/start-sdk'
+import { rm } from 'fs/promises'
 import { sdk } from '../sdk'
 import { i18n } from '../i18n'
 import { defaultDbMem, fulcrumConf } from '../file-models/fulcrum.conf'
@@ -104,7 +105,14 @@ export const configure = sdk.Action.withInput(
   },
   async ({ effects, input }) => {
     const { banner, ...conf } = input
-    if (banner) await bannerTxt.write(effects, banner)
+    // Fulcrum re-reads banner.txt on every `server.banner` call and falls back
+    // to its built-in banner when the file is absent, so an empty field means
+    // removing the file — writing it empty would serve an empty banner.
+    if (banner) {
+      await bannerTxt.write(effects, banner)
+    } else {
+      await rm(bannerTxt.path, { force: true })
+    }
     await fulcrumConf.merge(effects, utils.nullToUndefined(conf))
   },
 )

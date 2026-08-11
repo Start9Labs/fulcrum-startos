@@ -51,7 +51,7 @@
 **Key paths on the `main` volume:**
 
 - `fulcrum.conf` — main configuration file (INI format)
-- `banner.txt` — custom Electrum client banner (optional)
+- `banner.txt` — custom Electrum client banner (optional; absent unless Configure sets one)
 - `fulc2_db/` — RocksDB indexes (excluded from backup)
 - `fulc2_db.mainnet/` — mainnet database (excluded from backup)
 - `latch` — sync lock file (excluded from backup)
@@ -157,6 +157,8 @@ Connect wallets using the Electrum protocol (e.g., Sparrow, Electrum, BlueWallet
 - **Database Max Open Files** — raise if Fulcrum logs file handle errors (min 20)
 
 Saving Configure writes `fulcrum.conf`, which `main.ts` holds as a `.const()`, so the service restarts to pick the change up — Fulcrum reads its config only at startup. The `.const()` is registered _after_ `main.ts` writes the `bitcoind` bridge address so that write is part of the captured value; moving it earlier would make the service restart itself once on every start.
+
+The banner is the exception. It lives in its own file, so a banner-only save leaves `fulcrum.conf` byte-identical and nothing restarts — and nothing needs to. Fulcrum reads `banner.txt` inside its `server.banner` RPC handler, once per client request, falling back to a built-in banner when the file cannot be read. Setting a banner writes the file; clearing the field removes it.
 
 ---
 
