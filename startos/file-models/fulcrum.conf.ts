@@ -26,6 +26,7 @@ export const shape = z.object({
   worker_threads: iniNumber,
   db_mem: iniNumber,
   db_max_open_files: iniNumber,
+  max_history: iniNumber,
   banner: z.literal('/data/banner.txt').catch('/data/banner.txt'),
 })
 

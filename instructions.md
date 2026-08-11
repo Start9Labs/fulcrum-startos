@@ -41,6 +41,7 @@ Run the **Configure** action to set:
 - **Worker Threads** — leave at `0` to let Fulcrum auto-detect, or pin a specific number.
 - **Database Memory** — the RocksDB cache size in MiB. StartOS sets this for you at install and lowers it to 512 once the index is built, so you should not need to touch it; raise it to trade RAM for faster queries. Once you set it yourself, StartOS stops adjusting it.
 - **Database Max Open Files** — raise this if the logs complain about too many open files.
+- **Max Address History** — the most transactions Fulcrum will report for one address. An address busier than the limit comes back with an empty or partial history, balance and coin list instead of an error, so a wallet holding that address shows the funds as missing even though they are still on chain. Raise this if you use an address with a very long history; the limit is there to cap what a single request can cost in memory and time.
 
 Saving Configure restarts Fulcrum, because it only reads its configuration at startup. Changing only the banner is the exception — it applies right away, with no restart. Leave the banner field empty to go back to Fulcrum's own default banner.
 

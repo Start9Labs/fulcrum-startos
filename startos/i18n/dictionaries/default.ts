@@ -31,6 +31,8 @@ const dict = {
   'Upper bound on memory used by the RocksDB cache. Set at install for the index build and lowered automatically once the index is complete. Raise it for faster queries at the cost of RAM.': 21,
   'Database Max Open Files': 22,
   'Raise this if Fulcrum logs complaints about too many open files.': 23,
+  'Max Address History': 30,
+  'Largest number of transactions Fulcrum will report for a single address. An address busier than this returns an empty or partial history, balance and coin list rather than an error, so a wallet holding one shows the funds as missing. Raise this if an address you use has a very long history; the limit exists to bound the memory and time a single request can cost.': 31,
   Configuration: 24,
   // dependencies.ts
   'Pruning must be disabled, txindex and ZMQ must be enabled for Fulcrum to function properly.': 25,
