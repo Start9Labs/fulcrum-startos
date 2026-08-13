@@ -106,7 +106,7 @@
 
 Every value above is Fulcrum's own default, left unset in `fulcrum.conf`, **except Database Memory** (`db_mem`). Fulcrum's default is a flat 2048 MiB regardless of box size — sized for a dedicated Electrum server, whereas on StartOS it always shares RAM with the Bitcoin node it depends on. The package therefore writes `db_mem` explicitly:
 
-- **At install** (`init/seedFiles.ts`) — `defaultDbMem()`: a quarter of installed RAM, capped at Fulcrum's own 2048 MiB. The index build is the memory-hungry phase, so this only ever lowers the value, never raises it.
+- **At install** (`init/seedFiles.ts`) — `defaultDbMem()`: a quarter of `os.totalmem()`, capped at Fulcrum's own 2048 MiB. Note `os.totalmem()` inside a package is the memory StartOS makes available to service containers — host `MemTotal` less the 1 GiB it reserves for the system — not installed RAM. The 2048 cap binds on anything reporting 8 GiB or more, so only small devices ever seed below it. The index build is the memory-hungry phase, so this only ever lowers the value, never raises it.
 - **When the index completes** (`main.ts`, the `synced-true` oneshot) — `syncedDbMem()`: 512 MiB, or `defaultDbMem()` if that is already lower. Upstream notes that even 256 MiB performs well on an SSD.
 - **On update to `2.1.1:13`** — installs predating this backfill get `db_mem` written to whichever of the two matches their sync state.
 

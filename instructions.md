@@ -6,7 +6,7 @@
 
 ## Requirements
 
-- **Fulcrum is resource-intensive.** It reserves up to a quarter of your server's RAM (never more than 2 GB) while building its address index, drops to 512 MB once the index is complete, and needs more on top of that for its own working memory — all while sharing the machine with the Bitcoin node it depends on. The indexes need 180 GB+; combined with a full Bitcoin node (~800 GB), total storage requirements exceed 1 TB, so a 2 TB drive is strongly recommended. Insufficient resources may cause system instability or failure.
+- **Fulcrum is resource-intensive.** It reserves up to a quarter of the memory StartOS shares out among your services (never more than 2 GB) while building its address index, drops to 512 MB once the index is complete, and needs more on top of that for its own working memory — all while sharing the machine with the Bitcoin node it depends on. The indexes need 180 GB+; combined with a full Bitcoin node (~800 GB), total storage requirements exceed 1 TB, so a 2 TB drive is strongly recommended. Insufficient resources may cause system instability or failure.
 
 ## What you get on StartOS
 
