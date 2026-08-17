@@ -110,7 +110,7 @@ One interface, and what it publishes is worth reading closely.
 | -------------- | ------ | ---- | ---------------------- | ------------------------------ |
 | Electrum (SSL) | `main` | api  | 50002 TLS, 50001 plain | The Electrum protocol endpoint |
 
-StartOS terminates TLS at the edge and forwards plaintext to Fulcrum, so the TLS address is the one to give a wallet. The plaintext port is still allocated, but it is reachable only over the local service bridge — which is how a dependent on this box connects — and from nowhere else. Off the box, the TLS address is all there is. Clients that accept or pin an unrecognised certificate connect as-is; the Electrum desktop wallet rejects the device's CA chain on every address and needs the client-side step in `instructions.md`.
+StartOS terminates TLS at the edge and forwards plaintext to Fulcrum, so the TLS address is the one to give a wallet. The plaintext port is still allocated, but it is reachable only over the local service bridge — which is how a dependent on this box connects — and from nowhere else. Off the box, the TLS address is all there is. Clients that accept or pin an unrecognised certificate connect as-is; the Electrum desktop wallet rejects the device's CA chain on every address and needs the client-side step documented at <https://docs.start9.com/bitcoin-guides/connecting-wallets>.
 
 The interface overrides its scheme to `ssl` or `tcp` so each address renders as something a wallet can consume; left alone, both would appear as a bare host and port with nothing marking which is which.
 

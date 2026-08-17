@@ -1,23 +1,23 @@
 import { VersionInfo } from '@start9labs/start-sdk'
 
 export const current = VersionInfo.of({
-  version: '2.1.1:15',
+  version: '2.1.1:16',
   releaseNotes: {
-    en_US: `Configure gains a Max Address History setting.
+    en_US: `The instructions now link to a full wallet-connection guide.
 
-Fulcrum limits how many transactions it will report for any single address. Past that limit it answers with an empty or partial history, balance and coin list — and answers as though nothing were wrong, so a wallet holding a very busy address shows the funds as missing even though they are still on the chain and still yours. Until now there was no way to raise the limit from StartOS. The limit exists to bound what one request can cost in memory and time, so raise it only if you actually use an address with a long history.`,
-    es_ES: `Configurar incorpora el ajuste Historial máximo por dirección.
+Pointing a wallet at your own Electrum server takes the same few steps whatever wallet you use — turning SSL on, taking the port from the address rather than assuming 50002, and getting the wallet to trust the certificate your server issues. Those are now written up in one place in the Start9 Bitcoin guides, together with the settings path for each wallet and the certificate file the Electrum desktop wallet needs placed by hand. The Instructions tab links there instead of carrying a partial copy. Nothing about Fulcrum itself has changed.`,
+    es_ES: `Las instrucciones ahora enlazan con una guía completa para conectar carteras.
 
-Fulcrum limita cuántas transacciones informará para una sola dirección. Superado ese límite, responde con un historial, un saldo y una lista de monedas vacíos o parciales, y lo hace como si no ocurriera nada, de modo que una cartera con una dirección muy activa muestra los fondos como si hubieran desaparecido, aunque siguen en la cadena y siguen siendo suyos. Hasta ahora no había forma de aumentar el límite desde StartOS. El límite existe para acotar lo que puede costar una sola solicitud en memoria y tiempo, así que auméntelo solo si realmente usa una dirección con un historial largo.`,
-    de_DE: `Konfigurieren erhält die Einstellung Maximaler Adressverlauf.
+Apuntar una cartera a tu propio servidor Electrum requiere los mismos pasos sea cual sea la cartera: activar SSL, tomar el puerto de la dirección en lugar de suponer que es 50002, y conseguir que la cartera confíe en el certificado que emite tu servidor. Todo eso está ahora recogido en un solo sitio, en las guías de Bitcoin de Start9, junto con la ruta de ajustes de cada cartera y el archivo de certificado que la cartera de escritorio Electrum necesita que coloques a mano. La pestaña Instrucciones enlaza allí en lugar de llevar una copia parcial. Nada de Fulcrum en sí ha cambiado.`,
+    de_DE: `Die Anleitung verweist jetzt auf einen vollständigen Leitfaden zum Verbinden von Wallets.
 
-Fulcrum begrenzt, wie viele Transaktionen es für eine einzelne Adresse meldet. Oberhalb dieser Grenze antwortet es mit einem leeren oder unvollständigen Verlauf, Kontostand und Münzbestand — und zwar so, als wäre alles in Ordnung, sodass eine Wallet mit einer sehr aktiven Adresse das Guthaben als fehlend anzeigt, obwohl es weiterhin in der Blockchain liegt und Ihnen gehört. Bisher ließ sich die Grenze aus StartOS heraus nicht anheben. Sie begrenzt, was eine einzelne Anfrage an Speicher und Zeit kosten kann — erhöhen Sie sie also nur, wenn Sie tatsächlich eine Adresse mit langem Verlauf verwenden.`,
-    pl_PL: `Konfiguruj zyskuje ustawienie Maksymalna historia adresu.
+Eine Wallet auf den eigenen Electrum-Server zu richten erfordert immer dieselben Schritte, egal welche Wallet: SSL einschalten, den Port aus der Adresse übernehmen statt 50002 anzunehmen, und die Wallet dazu bringen, dem Zertifikat Ihres Servers zu vertrauen. Das steht jetzt an einer Stelle in den Bitcoin-Leitfäden von Start9 — zusammen mit dem Einstellungspfad jeder Wallet und der Zertifikatsdatei, die die Electrum-Desktop-Wallet von Hand abgelegt braucht. Der Reiter Anleitung verlinkt dorthin, statt eine unvollständige Kopie zu führen. An Fulcrum selbst ändert sich nichts.`,
+    pl_PL: `Instrukcje odsyłają teraz do pełnego przewodnika po podłączaniu portfeli.
 
-Fulcrum ogranicza liczbę transakcji zgłaszanych dla pojedynczego adresu. Po przekroczeniu tego limitu odpowiada pustą lub niepełną historią, saldem i listą monet — i robi to tak, jakby nic się nie stało, więc portfel z bardzo aktywnym adresem pokazuje środki jako brakujące, choć nadal są w łańcuchu i nadal należą do Ciebie. Do tej pory nie było sposobu, by podnieść ten limit z poziomu StartOS. Limit ogranicza pamięć i czas, jakie może kosztować pojedyncze żądanie, więc zwiększ go tylko wtedy, gdy faktycznie używasz adresu o długiej historii.`,
-    fr_FR: `Configurer reçoit le réglage Historique maximal par adresse.
+Skierowanie portfela na własny serwer Electrum wymaga tych samych kilku kroków niezależnie od portfela: włączenia SSL, wzięcia portu z adresu zamiast zakładania 50002 i sprawienia, by portfel zaufał certyfikatowi wystawianemu przez Twój serwer. Wszystko to jest teraz opisane w jednym miejscu, w przewodnikach Bitcoin od Start9, razem ze ścieżką ustawień dla każdego portfela i plikiem certyfikatu, który trzeba ręcznie umieścić dla portfela Electrum na komputer. Zakładka Instrukcje odsyła tam, zamiast powielać niepełną kopię. W samym Fulcrum nic się nie zmieniło.`,
+    fr_FR: `Les instructions renvoient désormais vers un guide complet de connexion des portefeuilles.
 
-Fulcrum limite le nombre de transactions qu'il rapporte pour une seule adresse. Au-delà de cette limite, il répond par un historique, un solde et une liste de pièces vides ou partiels — et il répond comme si de rien n'était, si bien qu'un portefeuille contenant une adresse très active affiche les fonds comme disparus, alors qu'ils sont toujours sur la chaîne et toujours à vous. Jusqu'ici, il n'y avait aucun moyen de relever cette limite depuis StartOS. Elle borne ce qu'une seule requête peut coûter en mémoire et en temps : ne l'augmentez donc que si vous utilisez réellement une adresse à l'historique long.`,
+Pointer un portefeuille vers votre propre serveur Electrum demande les mêmes quelques étapes quel que soit le portefeuille : activer SSL, reprendre le port depuis l'adresse plutôt que de supposer 50002, et amener le portefeuille à faire confiance au certificat émis par votre serveur. Tout cela est maintenant réuni en un seul endroit, dans les guides Bitcoin de Start9, avec le chemin des réglages de chaque portefeuille et le fichier de certificat que le portefeuille de bureau Electrum exige d'être placé à la main. L'onglet Instructions y renvoie au lieu d'en porter une copie partielle. Rien ne change dans Fulcrum lui-même.`,
   },
   migrations: {},
 })
