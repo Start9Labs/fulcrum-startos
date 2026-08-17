@@ -26,11 +26,24 @@ Fulcrum requires Bitcoin with `prune=0`, `txindex=true`, and ZMQ enabled. StartO
 
 ### Connecting a wallet
 
-Open the **Electrum (SSL)** interface and copy an address into your wallet (Sparrow, Electrum, BlueWallet, etc.). It is shown as an `ssl://` URL, and the host and port in it are what your wallet needs — **take the port from that address rather than assuming one**, since StartOS assigns it and it is not always the same number on every server.
+Open the **Electrum (SSL)** interface and copy an address into your wallet. It is shown as an `ssl://` URL, and the host and port in it are what your wallet needs — **take the port from that address rather than assuming one**, since StartOS assigns it and it is not always the same number on every server.
 
-Make sure your wallet's SSL option is on: in Sparrow that is *Private Electrum → Use SSL*, and in Electrum it is the `s` suffix on the server entry. Connecting with SSL off fails with a generic error such as "Retries exhausted" rather than anything naming TLS.
+Make sure your wallet's SSL option is on: in Sparrow that is _Private Electrum → Use SSL_, and in Electrum it is the `s` suffix on the server entry. Connecting with SSL off fails with a generic error such as "Retries exhausted" rather than anything naming TLS.
 
-StartOS handles the certificate (it is issued by your device's StartOS root CA) and exposes the interface over LAN, `.local`, Tor, and any custom domain you have attached.
+StartOS terminates TLS with a certificate issued by your device's root CA, and exposes the interface over LAN, `.local`, Tor, and any custom domain you have attached. A wallet that lets you accept or pin an unrecognised certificate — Sparrow does — connects with nothing further to do.
+
+### Setting up the Electrum desktop wallet
+
+Electrum is the exception. It checks a server against its own bundled list of public certificate authorities, and your device's certificate authority is not on that list, so it refuses the connection. It has no setting for trusting your device either, so you place the certificate in its data directory yourself. This is once per address, not once per session.
+
+1. Download `http://<your-server>/static/local-root-ca.crt` — the same root CA StartOS offers you for your browser.
+2. Delete any file already sitting at `<data-dir>/certs/<host>`. One left over from an earlier attempt stops the rest of this working, without reporting anything.
+3. Save the certificate as `<data-dir>/certs/<host>`, with no file extension. `<host>` has to match exactly what you type into Electrum, so reaching the same server at `192.168.1.5` and at `my-server.local` needs one file for each.
+4. Enter the server as `<host>:<port>:s`, taking the port from the interface address.
+
+`<data-dir>` is `~/.electrum` on Linux, `~/Library/Application Support/Electrum` on macOS, and `%APPDATA%\Electrum` on Windows.
+
+This trusts the authority rather than one certificate, so it keeps working when your server renews.
 
 ### Configure
 

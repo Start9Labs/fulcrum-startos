@@ -2,6 +2,8 @@ import { FileHelper, z } from '@start9labs/start-sdk'
 import { totalmem } from 'os'
 import { sdk } from '../sdk'
 
+// The post-sync reduction only reclaims db_mem while it still equals this, so a
+// value the user chose in Configure stays theirs.
 export const defaultDbMem = () =>
   Math.min(Math.floor((totalmem() * 0.25) / (1024 * 1024)), 2048)
 

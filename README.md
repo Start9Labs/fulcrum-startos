@@ -4,13 +4,15 @@
 
 # Fulcrum on StartOS
 
-> **Upstream docs:** <https://github.com/cculianu/Fulcrum/tree/master/doc>
->
 > Everything not listed in this document should behave the same as upstream
 > Fulcrum. If a feature, setting, or behavior is not mentioned here, the
-> upstream documentation is accurate and fully applicable.
+> upstream documentation is accurate and fully applicable — see the
+> Documentation section of `instructions.md` for links.
 
-[Fulcrum](https://github.com/cculianu/Fulcrum) is a high-performance Electrum server that indexes the Bitcoin blockchain from your own Bitcoin node. It allows you to connect hardware and software wallets to your own node, ensuring privacy and security.
+[Fulcrum](https://github.com/cculianu/Fulcrum) is an Electrum server: it builds an address index over your Bitcoin node's chain so wallets can query balances and histories. On StartOS it authenticates to the node through a mounted cookie, requires the node to be configured a particular way, and sizes its index cache to the machine.
+
+- **Upstream repo:** <https://github.com/cculianu/Fulcrum>
+- **Wrapper repo:** <https://github.com/Start9Labs/fulcrum-startos>
 
 ---
 
@@ -18,217 +20,165 @@
 
 - [Image and Container Runtime](#image-and-container-runtime)
 - [Volume and Data Layout](#volume-and-data-layout)
-- [Installation and First-Run Flow](#installation-and-first-run-flow)
-- [Configuration Management](#configuration-management)
-- [Network Access and Interfaces](#network-access-and-interfaces)
-- [Actions (StartOS UI)](#actions-startos-ui)
+- [File Models](#file-models)
 - [Dependencies](#dependencies)
-- [Backups and Restore](#backups-and-restore)
+- [Network Access and Interfaces](#network-access-and-interfaces)
+- [Installation and First-Run Flow](#installation-and-first-run-flow)
+- [Actions](#actions)
+- [Tasks](#tasks)
 - [Health Checks](#health-checks)
+- [Backups and Restore](#backups-and-restore)
 - [Limitations and Differences](#limitations-and-differences)
-- [What Is Unchanged from Upstream](#what-is-unchanged-from-upstream)
-- [Contributing](#contributing)
 - [Quick Reference for AI Consumers](#quick-reference-for-ai-consumers)
 
 ---
 
 ## Image and Container Runtime
 
-| Property      | Value                                         |
-| ------------- | --------------------------------------------- |
-| Image         | `cculianu/fulcrum` (upstream unmodified)      |
-| Architectures | x86_64, aarch64                               |
-| Command       | `Fulcrum --ts-format none /data/fulcrum.conf` |
+The upstream image is used unmodified, and one subcontainer runs the service.
 
----
+| Property      | Value                                                             |
+| ------------- | ----------------------------------------------------------------- |
+| Image         | `cculianu/fulcrum`                                                |
+| Architectures | x86_64, aarch64                                                   |
+| Command       | `Fulcrum` against the config file, with log timestamps suppressed |
+| Subcontainer  | `primary-sub` — the `primary` daemon, and the one to `attach` to  |
+
+Log timestamps are turned off because StartOS adds its own; leaving both produces two on every line.
 
 ## Volume and Data Layout
 
-| Volume | Mount Point | Purpose          |
-| ------ | ----------- | ---------------- |
-| `main` | `/data`     | All Fulcrum data |
+One volume, plus a read-only view of the Bitcoin node's.
 
-**Key paths on the `main` volume:**
+| Volume | Mount Point | Purpose                                                                   |
+| ------ | ----------- | ------------------------------------------------------------------------- |
+| `main` | `/data`     | `fulcrum.conf`, `banner.txt`, `store.json`, and the RocksDB address index |
 
-- `fulcrum.conf` — main configuration file (INI format)
-- `banner.txt` — custom Electrum client banner (optional; absent unless Configure sets one)
-- `fulc2_db/` — RocksDB indexes (excluded from backup)
-- `fulc2_db.mainnet/` — mainnet database (excluded from backup)
-- `latch` — sync lock file (excluded from backup)
+Bitcoin's data directory is mounted **read-only** at `/mnt/bitcoind`, which is how Fulcrum reads the RPC cookie — no credential is stored here.
 
-**Bitcoin dependency mount:**
+The address index is the large item: it is rebuilt from the chain rather than backed up, as described under [Backups and Restore](#backups-and-restore).
 
-- `/mnt/bitcoind` — Bitcoin volume (read-only, for cookie auth)
+## File Models
 
----
+Three models. One is Fulcrum's configuration, one is the banner it serves to clients, and one is StartOS-side state.
 
-## Installation and First-Run Flow
+| File           | Format | Modelled                  | Written by                                            |
+| -------------- | ------ | ------------------------- | ----------------------------------------------------- |
+| `fulcrum.conf` | INI    | Yes — `FileHelper.ini`    | Install, every init, `main`, and the Configure action |
+| `banner.txt`   | text   | Yes — `FileHelper.string` | The Configure action                                  |
+| `store.json`   | JSON   | Yes — `FileHelper.json`   | Every init, and `main`                                |
 
-| Step          | Upstream                     | StartOS                             |
-| ------------- | ---------------------------- | ----------------------------------- |
-| Installation  | Manual binary/Docker setup   | Install from marketplace            |
-| Configuration | Edit `fulcrum.conf` manually | Auto-configured, tunable via action |
-| Bitcoin       | Manual RPC configuration     | Auto-configured via dependency      |
+### fulcrum.conf
 
-**Resource requirements** (stated in `instructions.md`; the package declares no install alert): the seeded `db_mem` below plus Fulcrum's own working memory, on a box already running Bitcoin, and 180GB+ for the indexes. Combined with a Bitcoin node (~800GB), total storage exceeds 1TB. A 2TB drive is strongly recommended.
+**Enforced** — rewritten to a fixed value whenever the package writes the file: `datadir`, `tcp`, `rpccookie`, `banner`, `peering`, `announce`, and empty `rpcuser` / `rpcpassword`. The credential pair is pinned empty because authentication is the mounted cookie.
 
-**First-run steps:**
+Two of those are overrides rather than wiring: **`peering` and `announce` are both forced off**, where Fulcrum would otherwise participate in the public Electrum server network and advertise itself. A server behind StartOS is not intended to be a public one.
 
-1. Ensure Bitcoin is installed with txindex enabled (auto-configured)
-2. Install Fulcrum from the StartOS marketplace
-3. Wait for initial sync to complete (can take many hours)
+**Derived:** `bitcoind` is the node's RPC address, written by `main` from the node's own binding on every start. When Bitcoin is absent the key is omitted rather than filled with a dead address.
 
----
+**Yours, through the Configure action:** the RPC timeout and client count, worker threads, `db_max_open_files`, and `max_history`.
 
-## Configuration Management
+**Seeded, then reclaimed once:** `db_mem` is set at install to a quarter of system RAM, capped — a large cache makes the initial index build much faster. When the index finishes, the package lowers it, **but only if the value is still exactly what it seeded.** A value you chose in Configure is left alone.
 
-### Auto-Configured by StartOS
+Fulcrum reads this file only at startup, so every change to it restarts the daemon.
 
-| Setting     | Value                   | Purpose                                                                |
-| ----------- | ----------------------- | ---------------------------------------------------------------------- |
-| `datadir`   | `/data`                 | Data directory                                                         |
-| `bitcoind`  | (LXC bridge address)    | Bitcoin RPC connection (resolved dynamically over the internal bridge) |
-| `rpccookie` | `/mnt/bitcoind/.cookie` | Bitcoin cookie auth                                                    |
-| `tcp`       | `0.0.0.0:50001`         | Electrum protocol listener                                             |
-| `peering`   | `false`                 | Peer discovery disabled                                                |
-| `announce`  | `false`                 | Network announcement disabled                                          |
+### banner.txt
 
-### Configurable via Action
+The text served to connecting Electrum clients. The Configure action writes it, and clearing the field **deletes the file** rather than writing it empty — Fulcrum falls back to its built-in banner when the file is absent, and an empty file would serve an empty banner.
 
-| Setting                 | Default            | Purpose                            |
-| ----------------------- | ------------------ | ---------------------------------- |
-| Server Banner           | (empty)            | Custom banner for Electrum clients |
-| Bitcoin RPC Timeout     | 30s                | RPC response timeout               |
-| Bitcoin RPC Clients     | 3                  | Concurrent RPC connections         |
-| Worker Threads          | 0 (auto)           | Processing threads                 |
-| Database Memory         | seeded — see below | RocksDB cache size                 |
-| Database Max Open Files | 1000               | Max open file handles              |
+### store.json
 
-Every value above is Fulcrum's own default, left unset in `fulcrum.conf`, **except Database Memory** (`db_mem`). Fulcrum's default is a flat 2048 MiB regardless of box size — sized for a dedicated Electrum server, whereas on StartOS it always shares RAM with the Bitcoin node it depends on. The package therefore writes `db_mem` explicitly:
-
-- **At install** (`init/seedFiles.ts`) — `defaultDbMem()`: a quarter of `os.totalmem()`, capped at Fulcrum's own 2048 MiB. Note `os.totalmem()` inside a package is the memory StartOS makes available to service containers — host `MemTotal` less the 1 GiB it reserves for the system — not installed RAM. The 2048 cap binds on anything reporting 8 GiB or more, so only small devices ever seed below it. The index build is the memory-hungry phase, so this only ever lowers the value, never raises it.
-- **When the index completes** (`main.ts`, the `synced-true` oneshot) — `syncedDbMem()`: 512 MiB, or `defaultDbMem()` if that is already lower. Upstream notes that even 256 MiB performs well on an SSD.
-- **On update to `2.1.1:13`** — installs predating this backfill get `db_mem` written to whichever of the two matches their sync state.
-
-The reduction only applies when the value on disk is still exactly what `defaultDbMem()` seeded, so anything set through Configure is left alone.
-
----
-
-## Network Access and Interfaces
-
-| Interface      | Internal Port | Preferred External Port | Protocol | Purpose           |
-| -------------- | ------------- | ----------------------- | -------- | ----------------- |
-| Electrum (SSL) | 50001         | 50002 (TLS)             | TCP+SSL  | Electrum protocol |
-
-Fulcrum listens unencrypted on 50001 inside the container and StartOS terminates TLS in front of it (`addSsl` on the bind, `secure: null`). **TLS is the only way in from off the box** — LAN, `.local`, domains and Tor alike — which is what makes **Electrum (SSL)** an accurate name. A plaintext external port is allocated too. It is reachable at the bridge IP by the host and by other services over `lxcbr0` — source-filtered to that subnet — and from nowhere else; no LAN or WAN gateway gets a forward for it. That is the address `getBridgeAddress(…, { ssl: false })` hands to dependents, and it is what replaced the retired `fulcrum.startos` DNS name. `schemeOverride: { ssl: 'ssl', noSsl: 'tcp' }` is what renders an address as `ssl://host:port`; without it a `protocol: null` bind prints a bare `host:port` with nothing marking it as TLS.
-
-**The external port is per-server.** `preferredExternalPort` is a preference, and whatever StartOS assigns is permanent — an existing binding never changes its external port; only uninstall and reinstall reassigns. Never name a literal external port in user-facing docs; read the live values with `start-cli package host binding list fulcrum main`.
-
-**Access methods (StartOS 0.4.0):**
-
-- LAN IP with unique port
-- `<hostname>.local` with unique port
-- Tor `.onion` address
-- Custom domains (if configured)
-
-Connect wallets using the Electrum protocol (e.g., Sparrow, Electrum, BlueWallet).
-
----
-
-## Actions (StartOS UI)
-
-### Configure
-
-| Property     | Value                                |
-| ------------ | ------------------------------------ |
-| ID           | `configure`                          |
-| Visibility   | Enabled                              |
-| Availability | Any status                           |
-| Group        | Configuration                        |
-| Purpose      | Tune performance settings and banner |
-
-**Inputs:**
-
-- **Server Banner** — custom ASCII art banner for Electrum clients (max 2000 chars)
-- **Bitcoin RPC Timeout** — seconds to wait for RPC responses (min 30)
-- **Bitcoin RPC Clients** — concurrent connections to Bitcoin (min 1)
-- **Worker Threads** — 0 for auto-detect
-- **Database Memory** — RocksDB cache in MB (min 50); seeded and auto-lowered as described above
-- **Database Max Open Files** — raise if Fulcrum logs file handle errors (min 20)
-
-Saving Configure writes `fulcrum.conf`, which `main.ts` holds as a `.const()`, so the service restarts to pick the change up — Fulcrum reads its config only at startup. The `.const()` is registered _after_ `main.ts` writes the `bitcoind` bridge address so that write is part of the captured value; moving it earlier would make the service restart itself once on every start.
-
-The banner is the exception. It lives in its own file, so a banner-only save leaves `fulcrum.conf` byte-identical and nothing restarts — and nothing needs to. Fulcrum reads `banner.txt` inside its `server.banner` RPC handler, once per client request, falling back to a built-in banner when the file cannot be read. Setting a banner writes the file; clearing the field removes it.
-
----
+`syncNotified` alone: whether the one-time sync-complete notification has been sent.
 
 ## Dependencies
 
-### Bitcoin (required)
+One, and it is required — along with a particular configuration of it.
 
-| Property           | Value                                             |
-| ------------------ | ------------------------------------------------- |
-| Version constraint | Declared in `startos/dependencies.ts`             |
-| Health checks      | `bitcoind` must pass before Fulcrum starts        |
-| Mounted volumes    | `main` → `/mnt/bitcoind` (read-only)              |
-| Purpose            | Blockchain data via RPC and cookie authentication |
+| Dependency | Kind      | Health check | Mount                      | Why                                     |
+| ---------- | --------- | ------------ | -------------------------- | --------------------------------------- |
+| Bitcoin    | `running` | `bitcoind`   | `/mnt/bitcoind`, read-only | Chain data over RPC, and the RPC cookie |
 
-StartOS creates a critical task on Bitcoin to enforce required settings: `prune=0`, `txindex=true`, `zmqEnabled=true`.
+**Fulcrum also needs Bitcoin configured a specific way, and asks for it as a task on Bitcoin's own page** — pruning off, `txindex` on, and ZeroMQ on. See [Tasks](#tasks).
 
----
+The RPC address is resolved from Bitcoin's own binding over the service bridge, so a Bitcoin update does not move it and nothing is configured by hand.
 
-## Backups and Restore
+## Network Access and Interfaces
 
-**Included in backup:**
+One interface, and what it publishes is worth reading closely.
 
-- `main` volume (configuration and banner only)
+| Interface      | Id     | Type | Port                   | Description                    |
+| -------------- | ------ | ---- | ---------------------- | ------------------------------ |
+| Electrum (SSL) | `main` | api  | 50002 TLS, 50001 plain | The Electrum protocol endpoint |
 
-**Excluded from backup:**
+StartOS terminates TLS at the edge and forwards plaintext to Fulcrum, so the TLS address is the one to give a wallet. The plaintext port is still allocated, but it is reachable only over the local service bridge — which is how a dependent on this box connects — and from nowhere else. Off the box, the TLS address is all there is. Clients that accept or pin an unrecognised certificate connect as-is; the Electrum desktop wallet rejects the device's CA chain on every address and needs the client-side step in `instructions.md`.
 
-- `fulc2_db/` — RocksDB indexes
-- `fulc2_db.mainnet/` — mainnet database
-- `latch` — sync lock file
+The interface overrides its scheme to `ssl` or `tcp` so each address renders as something a wallet can consume; left alone, both would appear as a bare host and port with nothing marking which is which.
 
-The database is excluded because it can be rebuilt from the Bitcoin node. After restoring, Fulcrum will re-sync from scratch (which can take many hours).
+## Installation and First-Run Flow
 
----
+Install writes the config with `db_mem` sized to the machine and starts the daemon. No credential is generated and no local task is raised — but the service cannot do its job until two things are true.
+
+1. **Bitcoin must be configured for it.** Pruning off, `txindex` on, ZeroMQ on. This is raised as a `critical` task on Bitcoin, not here.
+2. **The index has to be built.** Fulcrum reads the chain and builds its own address index, which takes hours and is the bulk of first-run time. The Electrum port does not open until it finishes, so the service legitimately looks unready throughout.
+
+When the index completes, a Sync Complete notification is posted; if `db_mem` is still the seeded value, the notification says the service is restarting once to lower it.
+
+## Actions
+
+One action.
+
+### Configure
+
+Sets the banner and Fulcrum's performance parameters.
+
+- **What it changes:** `banner.txt`, and the tunable keys in `fulcrum.conf`.
+- **Cost:** seconds, then a restart — Fulcrum only reads its config at startup.
+- **Repeat safety:** idempotent; the form is pre-filled from the current files.
+- **Worth knowing about `db_mem`:** setting it here takes it out of the package's hands. The post-sync reduction only applies to the value install seeded, so a value you choose persists — including through the index build, where a large one is a real speed-up and a small one is a real slow-down.
+- **Worth knowing about `max_history`:** an address with more transactions than this returns an empty or partial history rather than an error, so a wallet holding such an address shows the funds as missing. Raise it if that happens.
+
+## Tasks
+
+One task, and it is raised on Bitcoin rather than here.
+
+| Task           | Raised on | Severity   | Raised when                                        | Cleared when                                          |
+| -------------- | --------- | ---------- | -------------------------------------------------- | ----------------------------------------------------- |
+| Auto-Configure | Bitcoin   | `critical` | Bitcoin has pruning on, or `txindex` or ZeroMQ off | Bitcoin's config matches; it returns if changed again |
+
+`critical` on Bitcoin, because Fulcrum cannot build an index against a pruned node and cannot follow the chain without the other two. The task carries the exact settings, so accepting it applies them. It re-raises whenever they drift, rather than being a one-time prompt.
+
+Note where the prompt appears: on **Bitcoin's** page, with nothing there explaining that Fulcrum asked for it.
 
 ## Health Checks
 
-| Check    | Display Name   | Method                    | Messages                         |
-| -------- | -------------- | ------------------------- | -------------------------------- |
-| Electrum | Electrum (SSL) | Port 50001 listening      | Ready / Not ready                |
-| Sync     | Sync Progress  | Controller log monitoring | Synced / [sync progress message] |
+Two checks, and they differ in what they mean during the index build.
 
-During initial sync, the Sync Progress health check displays real-time progress messages from Fulcrum's controller. When sync first reaches `success` after install, a **Sync Complete** notification is posted to the StartOS notifications panel (fires once per install) and the `db_mem` reduction above is written. That write is guarded by `store.json`'s `syncNotified`, which is persisted first, so the restart it triggers re-enters the oneshot with nothing left to do rather than looping.
+| Check                           | Method                                                          |
+| ------------------------------- | --------------------------------------------------------------- |
+| `primary` "Electrum (SSL)"      | The Electrum port is listening; reports `loading` while syncing |
+| `sync-progress` "Sync Progress" | Fulcrum's own progress output, read from its logs               |
 
----
+**Neither failing during the initial index build is a fault.** The Electrum port genuinely does not open until the index is complete, so `primary` reports `loading` rather than failure for as long as Fulcrum is logging progress. `sync-progress` surfaces Fulcrum's own progress line, so it is the one to read for how far along the build is; it reports success once the port opens.
+
+A `primary` failure with no sync progress being logged is the real fault case — the daemon is not running or not reaching Bitcoin.
+
+## Backups and Restore
+
+The `main` volume is copied wholesale — `sdk.Backups.ofVolumes('main')` — with the address index excluded.
+
+- **Excluded:** the RocksDB index directories and the lock file. These are derived from the chain and can be very large.
+- **Included:** `fulcrum.conf`, `banner.txt`, and `store.json`.
+
+**A restore therefore rebuilds the index from scratch**, which takes as long as the original build did and needs Bitcoin present and synced first. What comes back is the configuration, not the work.
 
 ## Limitations and Differences
 
-1. **No admin RPC** — Fulcrum's admin RPC interface is not exposed
-2. **No peering** — peer discovery and announcement are disabled
-3. **SSL certificate configuration** — SSL is handled automatically by StartOS
-
----
-
-## What Is Unchanged from Upstream
-
-- Full Electrum protocol support
-- All wallet functionality (balance, history, UTXO queries)
-- Transaction broadcasting
-- Address subscription and notifications
-- Header subscription
-- RocksDB storage engine
-- Multi-threaded request processing
-- Custom server banners
-- All client compatibility (Sparrow, Electrum, BlueWallet, etc.)
-
----
-
-## Contributing
-
-Build and development workflow follow the StartOS packaging guide: <https://docs.start9.com/packaging>. Keep `README.md`, `instructions.md`, and `AGENTS.md` in sync with any change to user-visible behavior or package structure.
+1. **Peering and announcement are disabled.** Fulcrum will not join the public Electrum server network or advertise itself.
+2. **The index is not backed up**, and a restore rebuilds it.
+3. **Bitcoin must run unpruned with `txindex` and ZeroMQ enabled**, which is a change to Bitcoin's configuration, requested as a task on that service.
+4. **`db_mem` is managed until you set it**, after which it is yours — including the post-sync reduction, which no longer applies.
+5. **The plaintext Electrum port is bridge-only.** Off the box, only the TLS address is reachable.
+6. **No riscv64 build.** x86_64 and aarch64 only.
 
 ---
 
@@ -237,14 +187,27 @@ Build and development workflow follow the StartOS packaging guide: <https://docs
 ```yaml
 package_id: fulcrum
 image: cculianu/fulcrum
-architectures: [x86_64, aarch64]
+architectures:
+  - x86_64
+  - aarch64
+subcontainers:
+  - primary-sub
 volumes:
   main: /data
-ports:
-  electrum: 50001
+file_models:
+  - /data/fulcrum.conf
+  - /data/banner.txt
+  - /data/store.json
+startos_managed_env_vars: []
 dependencies:
-  - bitcoind
-startos_managed_env_vars: none
+  - bitcoind # required; mounted read-only at /mnt/bitcoind
+interfaces:
+  main: { type: api, port: 50002 } # TLS at the edge; 50001 plaintext is bridge-only
 actions:
   - configure
+tasks:
+  - { action: autoconfig, severity: critical } # on bitcoind: unpruned, txindex, ZMQ
+health_checks:
+  - primary # displayed "Electrum (SSL)"
+  - sync-progress # displayed "Sync Progress"
 ```

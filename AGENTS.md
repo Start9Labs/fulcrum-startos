@@ -6,13 +6,12 @@ Develop it inside a StartOS packaging workspace created by `start-cli s9pk init-
 which provides the packaging guide and agent context one level up. If you're reading this in a
 bare clone with no workspace, the full guide is at <https://docs.start9.com/packaging>.
 
-Work this package's `TODO.md` from top to bottom. Keep `README.md` (architecture, for developers and LLMs) and `instructions.md` (end-user docs) in sync with your changes.
+Work this package's `TODO.md` from top to bottom. Keep `README.md` (technical reference for an AI support or administering agent) and `instructions.md` (end-user docs) in sync with your changes.
 
 ## This repo
 
-- **Package id is `fulcrum`.** A high-performance Electrum server exposing the **Electrum (SSL)** interface (host id `main`), with a hard dependency on Bitcoin (`bitcoind`, `optional: false`).
-- **Reaching bitcoind's RPC goes through the LXC bridge**, not `bitcoind.startos` DNS. `main.ts` resolves the address via `sdk.host.getBridgeAddress` chained with `.const()`, then pins it into `fulcrum.conf`'s `bitcoind` field before starting the daemon. The helper resolves the binding’s derived bridge address, so the `.const()` restarts Fulcrum only on bitcoind install/uninstall/port-change, never on bitcoind updates. While bitcoind is absent the address is `null` and `main.ts` omits the `bitcoind` line; the `.const()` heals (one restart), writing the real address, when bitcoind appears. bitcoind's host id and internal RPC port are imported from `bitcoin-core-startos/startos/utils`, never hardcoded.
-
-## Inspecting a running install
-
-To run a command inside the service's container (read its generated config, grep app logs), use `start-cli package attach fulcrum -n primary -- <cmd>`. Select the subcontainer by **name** with `-n` (the name passed to `SubContainer.of` in `main.ts` — here `primary-sub`) or by image with `-i`. Note: `-s/--subcontainer` matches the internal **Guid**, not the name, so passing a name to `-s` fails with "no matching subcontainers".
+- **Never prefill the Configure form by spreading the whole config.** `fulcrum.conf`'s `banner` key is the _path_ to `banner.txt`, not its contents — spreading it put that path in the textarea, and the next save wrote the path into `banner.txt` and served it to clients. Prefill only the keys the spec declares.
+- **An empty banner means deleting `banner.txt`, not writing it empty.** Fulcrum re-reads the file per `server.banner` call and falls back to its built-in banner only when the file is absent.
+- **`main` must `const` the config _after_ writing `bitcoind` into it**, or that write registers as a change and the daemon restarts itself on every start.
+- **`peering` and `announce` stay pinned false.** This is not a public Electrum server, and both would advertise it as one.
+- **The bitcoind version range is per-major, not a floor.** It pins the revision on each Core line that carries the fixes Fulcrum needs — widening it to a single `>=` would admit older revisions on the newer lines.
