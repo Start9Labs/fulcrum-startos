@@ -110,7 +110,7 @@ One interface, and what it publishes is worth reading closely.
 | -------------- | ------ | ---- | ---------------------- | ------------------------------ |
 | Electrum (SSL) | `main` | api  | 50002 TLS, 50001 plain | The Electrum protocol endpoint |
 
-StartOS terminates TLS at the edge and forwards plaintext to Fulcrum, so the TLS address is the one to give a wallet. The plaintext port is still allocated, but it is reachable only over the local service bridge — which is how a dependent on this box connects — and from nowhere else. Off the box, the TLS address is all there is. Clients that accept or pin an unrecognised certificate connect as-is; the Electrum desktop wallet rejects the device's CA chain on every address and needs the client-side step documented at <https://docs.start9.com/bitcoin-guides/connecting-wallets>.
+StartOS terminates TLS at the edge and forwards plaintext to Fulcrum, so the TLS address is the one to give a wallet. The plaintext port is still allocated, but no LAN or WAN gateway forwards it: it is reachable over the local service bridge — which is how a dependent on this box connects — and, indirectly, over a Tor address added with its SSL toggle off, since the Tor service points an onion at whichever bridge address that toggle selects. Every LAN, `.local` and domain address is the TLS one. Clients that accept or pin an unrecognised certificate connect as-is; the Electrum desktop wallet rejects the device's CA chain on every address and needs the client-side step documented at <https://docs.start9.com/bitcoin-guides/connecting-wallets>.
 
 The interface overrides its scheme to `ssl` or `tcp` so each address renders as something a wallet can consume; left alone, both would appear as a bare host and port with nothing marking which is which.
 
@@ -177,7 +177,7 @@ The `main` volume is copied wholesale — `sdk.Backups.ofVolumes('main')` — wi
 2. **The index is not backed up**, and a restore rebuilds it.
 3. **Bitcoin must run unpruned with `txindex` and ZeroMQ enabled**, which is a change to Bitcoin's configuration, requested as a task on that service.
 4. **`db_mem` is managed until you set it**, after which it is yours — including the post-sync reduction, which no longer applies.
-5. **The plaintext Electrum port is bridge-only.** Off the box, only the TLS address is reachable.
+5. **The plaintext Electrum port gets no LAN or WAN forward.** Every LAN, `.local` and domain address is the TLS one; a Tor address added with SSL off is the one way to reach the plaintext port from elsewhere.
 6. **No riscv64 build.** x86_64 and aarch64 only.
 
 ---
