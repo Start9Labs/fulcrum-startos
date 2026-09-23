@@ -3,12 +3,12 @@ import { i18n } from './i18n'
 import { electrumPort } from './utils'
 import { manifest as bitcoinManifest } from 'bitcoin-core-startos/startos/manifest'
 import { rpcHostId, rpcPort } from 'bitcoin-core-startos/startos/utils'
-import { storeJson } from './file-models/store.json'
+import { storeJson } from './fileModels/store.json'
 import {
   defaultDbMem,
   fulcrumConf,
   syncedDbMem,
-} from './file-models/fulcrum.conf'
+} from './fileModels/fulcrum.conf'
 
 export const main = sdk.setupMain(async ({ effects }) => {
   console.info(i18n('Starting Fulcrum'))
