@@ -2,8 +2,8 @@ import { utils } from '@start9labs/start-sdk'
 import { rm } from 'fs/promises'
 import { sdk } from '../sdk'
 import { i18n } from '../i18n'
-import { defaultDbMem, fulcrumConf } from '../file-models/fulcrum.conf'
-import { bannerTxt } from '../file-models/banner.txt'
+import { defaultDbMem, fulcrumConf } from '../fileModels/fulcrum.conf'
+import { bannerTxt } from '../fileModels/banner.txt'
 
 const { InputSpec, Value } = sdk
 

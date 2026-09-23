@@ -4,8 +4,8 @@ import {
   defaultDbMem,
   fulcrumConf,
   syncedDbMem,
-} from '../file-models/fulcrum.conf'
-import { storeJson } from '../file-models/store.json'
+} from '../fileModels/fulcrum.conf'
+import { storeJson } from '../fileModels/store.json'
 
 export const v_2_1_1_13 = VersionInfo.of({
   version: '2.1.1:13',
