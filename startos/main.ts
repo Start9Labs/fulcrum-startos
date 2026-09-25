@@ -1,6 +1,8 @@
+import { existsSync } from 'fs'
+import { rm } from 'fs/promises'
 import { sdk } from './sdk'
 import { i18n } from './i18n'
-import { electrumPort } from './utils'
+import { electrumPort, reindexRequest } from './utils'
 import { manifest as bitcoinManifest } from 'bitcoin-core-startos/startos/manifest'
 import { rpcHostId, rpcPort } from 'bitcoin-core-startos/startos/utils'
 import { storeJson } from './fileModels/store.json'
@@ -12,6 +14,23 @@ import {
 
 export const main = sdk.setupMain(async ({ effects }) => {
   console.info(i18n('Starting Fulcrum'))
+
+  if (existsSync(reindexRequest)) {
+    for (const entry of ['fulc2_db', 'latch']) {
+      await rm(sdk.volumes.main.subpath(entry), {
+        recursive: true,
+        force: true,
+      })
+    }
+    if (
+      (await fulcrumConf.read((c) => c.db_mem).once()) === syncedDbMem() &&
+      syncedDbMem() < defaultDbMem()
+    ) {
+      await fulcrumConf.merge(effects, { db_mem: defaultDbMem() })
+    }
+    await storeJson.merge(effects, { syncNotified: false })
+    await rm(reindexRequest, { force: true })
+  }
 
   const store = await storeJson.read().once()
   if (!store) throw new Error('No store')
