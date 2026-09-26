@@ -37,6 +37,12 @@ const dict = {
   // dependencies.ts
   'Pruning must be disabled, txindex and ZMQ must be enabled for Fulcrum to function properly.': 25,
   Default: 26,
+  // actions/reindex.ts
+  Reindex: 32,
+  'Delete the address index and rebuild it from Bitcoin. Use this only if the index is corrupted: Fulcrum keeps crashing and its logs report a corrupted database, either a "Corruption" error or a message to delete the datadir and resync. If Bitcoin is still syncing, or a restart has not been tried, do that first.': 33,
+  'Fulcrum and every service that uses it are unavailable for as long as the first index build took, which can be several days. If the logs show input/output errors, check your drive first: a rebuild on a failing drive fails the same way.': 34,
+  'Fulcrum is restarting. It deletes its index and rebuilds it from Bitcoin, which can take several days.': 35,
+  'Fulcrum deletes its index and rebuilds it from Bitcoin the next time it starts.': 36,
 } as const
 
 export type I18nKey = keyof typeof dict
