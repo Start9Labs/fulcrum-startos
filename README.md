@@ -118,7 +118,7 @@ The interface overrides its scheme to `ssl` or `tcp` so each address renders as 
 
 ## Installation and First-Run Flow
 
-Install writes the config with `db_mem` sized to the machine and starts the daemon. No credential is generated and no local task is raised — but the service cannot do its job until two things are true.
+Install writes the config with `db_mem` sized to the machine. Start Fulcrum after installation to begin indexing. No credential is generated and no local task is raised — but the service cannot do its job until two things are true.
 
 1. **Bitcoin must be configured for it.** Pruning off, `txindex` on, ZeroMQ on. This is raised as a `critical` task on Bitcoin, not here.
 2. **The index has to be built.** Fulcrum reads the chain and builds its own address index, which takes hours and is the bulk of first-run time. The Electrum port does not open until it finishes, so the service legitimately looks unready throughout.
@@ -170,7 +170,7 @@ Two checks, and they differ in what they mean during the index build.
 | `primary` "Electrum (SSL)"      | The Electrum port is listening; reports `loading` while syncing |
 | `sync-progress` "Sync Progress" | Fulcrum's own progress output, read from its logs               |
 
-**Neither failing during the initial index build is a fault.** The Electrum port genuinely does not open until the index is complete, so `primary` reports `loading` rather than failure for as long as Fulcrum is logging progress. `sync-progress` surfaces Fulcrum's own progress line, so it is the one to read for how far along the build is; it reports success once the port opens.
+**Neither failing during the initial index build is a fault.** The Electrum port genuinely does not open until the index is complete, so `primary` reports `loading` rather than failure for as long as Fulcrum is logging progress. `sync-progress` surfaces the latest complete `<Controller>` line from Fulcrum's stdout, even when a pipe read splits or combines log lines; it reports success once the port opens.
 
 A `primary` failure with no sync progress being logged is the real fault case — the daemon is not running or not reaching Bitcoin.
 

@@ -1,5 +1,6 @@
 import { existsSync } from 'fs'
 import { rm } from 'fs/promises'
+import { StringDecoder } from 'string_decoder'
 import { sdk } from './sdk'
 import { i18n } from './i18n'
 import { electrumPort, reindexRequest } from './utils'
@@ -59,8 +60,9 @@ export const main = sdk.setupMain(async ({ effects }) => {
   // daemon to take effect, which is exactly what this const does.
   const conf = await fulcrumConf.read().const(effects)
 
-  // var to keep track of sync progress
   let lastSyncLog: string | null = null
+  let pendingSyncLine = ''
+  const syncDecoder = new StringDecoder('utf8')
 
   return sdk.Daemons.of(effects)
     .addDaemon('primary', {
@@ -85,17 +87,19 @@ export const main = sdk.setupMain(async ({ effects }) => {
       ),
       exec: {
         command: ['Fulcrum', '--ts-format', 'none', '/data/fulcrum.conf'],
-        // capture stdout and keep track of sync progress logs
         onStdout: (chunk) => {
-          const text = Buffer.isBuffer(chunk)
-            ? chunk.toString('utf8')
-            : String(chunk)
-
+          const text = syncDecoder.write(
+            Buffer.isBuffer(chunk) ? chunk : Buffer.from(String(chunk)),
+          )
           console.log(text)
 
-          const prefix = '<Controller>'
-          if (text.startsWith(prefix)) {
-            lastSyncLog = text.slice(prefix.length).trim()
+          const lines = (pendingSyncLine + text).split('\n')
+          pendingSyncLine = lines.pop() ?? ''
+          for (const line of lines) {
+            const prefix = '<Controller>'
+            if (line.startsWith(prefix)) {
+              lastSyncLog = line.slice(prefix.length).trim()
+            }
           }
         },
       },

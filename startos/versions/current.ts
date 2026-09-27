@@ -1,18 +1,18 @@
 import { VersionInfo } from '@start9labs/start-sdk'
 
 export const current = VersionInfo.of({
-  version: '2.1.2:1',
+  version: '2.1.2:2',
   releaseNotes: {
     en_US:
-      'A new **Reindex** action rebuilds a corrupted address index without uninstalling Fulcrum.',
+      'Sync Progress now displays complete, up-to-date progress messages during indexing, even when log lines arrive in pieces or together.',
     es_ES:
-      'Una nueva acción **Reindexar** reconstruye un índice de direcciones dañado sin desinstalar Fulcrum.',
+      'El progreso de sincronización ahora muestra mensajes completos y actualizados durante la indexación, incluso cuando las líneas del registro llegan fragmentadas o juntas.',
     de_DE:
-      'Eine neue Aktion **Neu indizieren** baut einen beschädigten Adressindex neu auf, ohne Fulcrum zu deinstallieren.',
+      'Der Synchronisierungsfortschritt zeigt während der Indizierung nun vollständige, aktuelle Meldungen an, auch wenn Protokollzeilen stückweise oder zusammen eintreffen.',
     pl_PL:
-      'Nowa akcja **Reindeksuj** odbudowuje uszkodzony indeks adresów bez odinstalowywania Fulcrum.',
+      'Postęp synchronizacji wyświetla teraz pełne, aktualne komunikaty podczas indeksowania, nawet gdy wiersze dziennika docierają we fragmentach lub razem.',
     fr_FR:
-      "Une nouvelle action **Réindexer** reconstruit un index d'adresses corrompu sans désinstaller Fulcrum.",
+      "La progression de la synchronisation affiche désormais des messages complets et à jour pendant l'indexation, même lorsque les lignes du journal arrivent par fragments ou ensemble.",
   },
   migrations: {},
 })
