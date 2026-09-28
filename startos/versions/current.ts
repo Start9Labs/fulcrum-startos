@@ -4,15 +4,15 @@ export const current = VersionInfo.of({
   version: '2.1.2:2',
   releaseNotes: {
     en_US:
-      'Sync Progress now displays complete, up-to-date progress messages during indexing, even when log lines arrive in pieces or together.',
+      "**Sync Progress** reliably shows Fulcrum's current indexing progress.",
     es_ES:
-      'El progreso de sincronización ahora muestra mensajes completos y actualizados durante la indexación, incluso cuando las líneas del registro llegan fragmentadas o juntas.',
+      '**Progreso de sincronización** muestra de forma fiable el estado actual de la indexación de Fulcrum.',
     de_DE:
-      'Der Synchronisierungsfortschritt zeigt während der Indizierung nun vollständige, aktuelle Meldungen an, auch wenn Protokollzeilen stückweise oder zusammen eintreffen.',
+      '**Synchronisierungsfortschritt** zeigt zuverlässig den aktuellen Stand der Indizierung von Fulcrum.',
     pl_PL:
-      'Postęp synchronizacji wyświetla teraz pełne, aktualne komunikaty podczas indeksowania, nawet gdy wiersze dziennika docierają we fragmentach lub razem.',
+      '**Postęp synchronizacji** rzetelnie pokazuje aktualny stan indeksowania Fulcrum.',
     fr_FR:
-      "La progression de la synchronisation affiche désormais des messages complets et à jour pendant l'indexation, même lorsque les lignes du journal arrivent par fragments ou ensemble.",
+      "**Progression de la synchronisation** indique de manière fiable l'état d'avancement actuel de l'indexation de Fulcrum.",
   },
   migrations: {},
 })

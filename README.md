@@ -170,9 +170,9 @@ Two checks, and they differ in what they mean during the index build.
 | `primary` "Electrum (SSL)"      | The Electrum port is listening; reports `loading` while syncing |
 | `sync-progress` "Sync Progress" | Fulcrum's own progress output, read from its logs               |
 
-**Neither failing during the initial index build is a fault.** The Electrum port genuinely does not open until the index is complete, so `primary` reports `loading` rather than failure for as long as Fulcrum is logging progress. `sync-progress` surfaces the latest complete `<Controller>` line from Fulcrum's stdout, even when a pipe read splits or combines log lines; it reports success once the port opens.
+**Neither failing during the initial index build is a fault.** The Electrum port genuinely does not open until the index is complete, so `primary` reports `loading` rather than failure for as long as Fulcrum is logging progress. `sync-progress` shows Fulcrum's latest `<Controller>` line, so it is the one to read for how far along the build is; it reports success once the port opens.
 
-A `primary` failure with no sync progress being logged is the real fault case — the daemon is not running or not reaching Bitcoin.
+A `primary` failure with no sync progress being logged is the real fault case — the daemon is not running. A Fulcrum that cannot reach Bitcoin keeps running and logs `<Controller> Waiting for bitcoind...`, so during the index build that is what Sync Progress shows.
 
 ## Backups and Restore
 
