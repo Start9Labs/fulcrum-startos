@@ -1,5 +1,6 @@
 import { existsSync } from 'fs'
 import { rm } from 'fs/promises'
+import { StringDecoder } from 'string_decoder'
 import { sdk } from './sdk'
 import { i18n } from './i18n'
 import { electrumPort, reindexRequest } from './utils'
@@ -59,7 +60,6 @@ export const main = sdk.setupMain(async ({ effects }) => {
   // daemon to take effect, which is exactly what this const does.
   const conf = await fulcrumConf.read().const(effects)
 
-  // var to keep track of sync progress
   let lastSyncLog: string | null = null
 
   return sdk.Daemons.of(effects)
@@ -84,18 +84,23 @@ export const main = sdk.setupMain(async ({ effects }) => {
         'primary-sub',
       ),
       exec: {
-        command: ['Fulcrum', '--ts-format', 'none', '/data/fulcrum.conf'],
-        // capture stdout and keep track of sync progress logs
-        onStdout: (chunk) => {
-          const text = Buffer.isBuffer(chunk)
-            ? chunk.toString('utf8')
-            : String(chunk)
-
-          console.log(text)
-
-          const prefix = '<Controller>'
-          if (text.startsWith(prefix)) {
-            lastSyncLog = text.slice(prefix.length).trim()
+        // The SDK calls fn on every respawn, so a restarted Fulcrum inherits no partial line or progress.
+        fn: async () => {
+          lastSyncLog = null
+          let pending = ''
+          const decoder = new StringDecoder('utf8')
+          return {
+            command: ['Fulcrum', '--ts-format', 'none', '/data/fulcrum.conf'],
+            onStdout: (chunk) => {
+              const lines = (pending + decoder.write(chunk)).split('\n')
+              pending = lines.pop() ?? ''
+              for (const line of lines) {
+                console.log(line)
+                if (line.startsWith('<Controller>')) {
+                  lastSyncLog = line.slice('<Controller>'.length).trim()
+                }
+              }
+            },
           }
         },
       },

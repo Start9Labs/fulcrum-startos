@@ -1,18 +1,18 @@
 import { VersionInfo } from '@start9labs/start-sdk'
 
 export const current = VersionInfo.of({
-  version: '2.1.2:1',
+  version: '2.1.2:2',
   releaseNotes: {
     en_US:
-      'A new **Reindex** action rebuilds a corrupted address index without uninstalling Fulcrum.',
+      "**Sync Progress** reliably shows Fulcrum's current indexing progress.",
     es_ES:
-      'Una nueva acción **Reindexar** reconstruye un índice de direcciones dañado sin desinstalar Fulcrum.',
+      '**Progreso de sincronización** muestra de forma fiable el estado actual de la indexación de Fulcrum.',
     de_DE:
-      'Eine neue Aktion **Neu indizieren** baut einen beschädigten Adressindex neu auf, ohne Fulcrum zu deinstallieren.',
+      '**Synchronisierungsfortschritt** zeigt zuverlässig den aktuellen Stand der Indizierung von Fulcrum.',
     pl_PL:
-      'Nowa akcja **Reindeksuj** odbudowuje uszkodzony indeks adresów bez odinstalowywania Fulcrum.',
+      '**Postęp synchronizacji** rzetelnie pokazuje aktualny stan indeksowania Fulcrum.',
     fr_FR:
-      "Une nouvelle action **Réindexer** reconstruit un index d'adresses corrompu sans désinstaller Fulcrum.",
+      "**Progression de la synchronisation** indique de manière fiable l'état d'avancement actuel de l'indexation de Fulcrum.",
   },
   migrations: {},
 })

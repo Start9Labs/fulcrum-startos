@@ -21,7 +21,7 @@ Fulcrum requires Bitcoin with `prune=0`, `txindex=true`, and ZMQ enabled. StartO
 1. Install Bitcoin if you have not already.
 2. Install Fulcrum. Resolve any critical task that appears on Bitcoin to enforce the required settings.
 3. Start Fulcrum. The initial index build takes many hours and pulls roughly 180 GB of data on top of the Bitcoin volume — plan for at least 1 TB of disk, ideally 2 TB.
-4. Watch the **Sync Progress** health check on the service dashboard. It reports live progress from Fulcrum's controller and switches to **Synced** once the Electrum interface is ready to serve clients.
+4. Watch the **Sync Progress** health check on the service dashboard. It shows Fulcrum's current indexing progress and reports **Fulcrum is synced** once the Electrum interface is ready to serve clients.
 
 ## Using Fulcrum
 
