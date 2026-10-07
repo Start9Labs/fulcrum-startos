@@ -1,8 +1,19 @@
 import { autoconfig } from 'bitcoin-core-startos/startos/actions/config/autoconfig'
 import { i18n } from './i18n'
+import { bitcoindDescription } from './manifest/i18n'
 import { sdk } from './sdk'
 
-export const setDependencies = sdk.setupDependencies(async ({ effects }) => {
+const bitcoind = sdk.Dependency.required('bitcoind', {
+  description: bitcoindDescription,
+  metadata: {
+    title: 'Bitcoin',
+    icon: 'https://raw.githubusercontent.com/Start9Labs/bitcoin-core-startos/refs/heads/30.x/dep-icon.svg',
+  },
+  kind: 'running',
+  versionRange:
+    '(>=28.4:17 && <29) || (>=29.4:4 && <30) || (>=30.3:4 && <31) || >=31.1:4',
+  healthChecks: ['bitcoind'],
+}).withInit(async (effects) => {
   await sdk.action.createTask(effects, 'bitcoind', autoconfig, 'critical', {
     input: {
       kind: 'partial',
@@ -14,13 +25,6 @@ export const setDependencies = sdk.setupDependencies(async ({ effects }) => {
     ),
     when: { condition: 'input-not-matches', once: false },
   })
-
-  return {
-    bitcoind: {
-      kind: 'running',
-      versionRange:
-        '(>=28.4:17 && <29) || (>=29.4:4 && <30) || (>=30.3:4 && <31) || >=31.1:4',
-      healthChecks: ['bitcoind'],
-    },
-  }
 })
+
+export const dependencies = sdk.Dependencies.of().addDependency(bitcoind)
