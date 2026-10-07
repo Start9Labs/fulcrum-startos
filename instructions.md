@@ -31,6 +31,8 @@ Open the **Electrum (SSL)** interface and copy an address into your wallet. It i
 
 Only the encrypted endpoint is reachable from off this server, so your wallet's SSL option has to be on, and it has to be told to trust the certificate StartOS serves. The one exception is a Tor address you add with its **SSL** toggle turned off: that address alone is plain TCP, so turn SSL **off** in your wallet when you connect over it. Both steps, and where the settings live in each wallet, are in the [Start9 guide to connecting a wallet](https://docs.start9.com/bitcoin-guides/connecting-wallets). The Electrum desktop wallet needs a file placed by hand and is covered there too.
 
+If your wallet connected over Tor before StartOS 0.4, that .onion address no longer reaches Fulcrum. Add an .onion address to the **Electrum (SSL)** interface and point your wallet at it.
+
 ### Configure
 
 Run the **Configure** action to set:

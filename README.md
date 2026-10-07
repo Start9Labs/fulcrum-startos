@@ -114,6 +114,8 @@ One interface, and what it publishes is worth reading closely.
 
 StartOS terminates TLS at the edge and forwards plaintext to Fulcrum, so the TLS address is the one to give a wallet. The plaintext port is still allocated, but no LAN or WAN gateway forwards it: it is reachable over the local service bridge — which is how a dependent on this box connects — and, indirectly, over a Tor address added with its SSL toggle off, since the Tor service points an onion at whichever bridge address that toggle selects. Every LAN, `.local` and domain address is the TLS one. Clients that accept or pin an unrecognised certificate connect as-is; the Electrum desktop wallet rejects the device's CA chain on every address and needs the client-side step documented at <https://docs.start9.com/bitcoin-guides/connecting-wallets>.
 
+A server carried over from StartOS 0.3.5 also had an `electrum` host from the old package. `2.1.3:1` retires it on update; its addresses, including any `.onion`, are not moved to `main`.
+
 The interface overrides its scheme to `ssl` or `tcp` so each address renders as something a wallet can consume; left alone, both would appear as a bare host and port with nothing marking which is which.
 
 ## Installation and First-Run Flow
