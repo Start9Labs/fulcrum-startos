@@ -4,10 +4,10 @@ Fulcrum is shipped as a prebuilt Docker image; the upstream project and the publ
 
 ## Determining the upstream version
 
-[cculianu/Fulcrum](https://github.com/cculianu/Fulcrum) — latest GitHub release:
+Read the [cculianu/Fulcrum](https://github.com/cculianu/Fulcrum) tags and select the newest stable version, excluding prereleases rather than relying on GitHub's Latest badge:
 
 ```sh
-gh release view -R cculianu/Fulcrum --json tagName -q .tagName
+gh api --paginate 'repos/cculianu/Fulcrum/tags?per_page=100' --jq '.[].name'
 ```
 
 Cross-check against the [`cculianu/fulcrum`](https://hub.docker.com/r/cculianu/fulcrum/tags) Docker Hub tags (the image must be published before the bump can land):
@@ -21,4 +21,4 @@ The pinned tag lives in `startos/manifest/index.ts` at `images.main.source.docke
 ## Applying the bump
 
 1. In `startos/manifest/index.ts`, set `images.main.source.dockerTag` to `cculianu/fulcrum:v<new version>`.
-2. In `startos/versions/current.ts`, set `version` to `<new version>:0` and rewrite `releaseNotes` in every locale it carries.
+2. If `startos/versions/current.ts` carries a migration, preserve it as a historical version and register it in `startos/versions/index.ts` as described in the packaging guide. Then set `current.ts`'s `version` to `<new version>:0` and rewrite `releaseNotes` in every locale it carries; do not carry the old migration into the new version.
