@@ -61,6 +61,7 @@ export const main = sdk.setupMain(async ({ effects }) => {
   const conf = await fulcrumConf.read().const(effects)
 
   let lastSyncLog: string | null = null
+  let missingBlockAt = 0
 
   return sdk.Daemons.of(effects)
     .addDaemon('primary', {
@@ -87,6 +88,7 @@ export const main = sdk.setupMain(async ({ effects }) => {
         // The SDK calls fn on every respawn, so a restarted Fulcrum inherits no partial line or progress.
         fn: async () => {
           lastSyncLog = null
+          missingBlockAt = 0
           let pending = ''
           const decoder = new StringDecoder('utf8')
           return {
@@ -98,6 +100,15 @@ export const main = sdk.setupMain(async ({ effects }) => {
                 console.log(line)
                 if (line.startsWith('<Controller>')) {
                   lastSyncLog = line.slice('<Controller>'.length).trim()
+                }
+                // Bitcoin's answer for a block it has not downloaded yet (31.x, then 28.x–30.x); Fulcrum retries every 2 s.
+                if (
+                  line.includes('getblock: error response') &&
+                  /Block not available \(not fully downloaded\)|Block not found on disk/.test(
+                    line,
+                  )
+                ) {
+                  missingBlockAt = Date.now()
                 }
               }
             },
@@ -144,6 +155,12 @@ export const main = sdk.setupMain(async ({ effects }) => {
           )
 
           if (fulcrumReady.result === 'success') return fulcrumReady
+
+          if (Date.now() - missingBlockAt < 30_000)
+            return {
+              message: i18n('Waiting for Bitcoin to provide historical blocks'),
+              result: 'loading',
+            }
 
           if (!lastSyncLog) {
             return {
