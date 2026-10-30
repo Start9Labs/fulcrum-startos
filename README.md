@@ -176,7 +176,7 @@ Two checks, and they differ in what they mean during the index build.
 
 A `primary` failure with no sync progress being logged is the real fault case — the daemon is not running. A Fulcrum that cannot reach Bitcoin keeps running and logs `<Controller> Waiting for bitcoind...`, so during the index build that is what Sync Progress shows.
 
-**A Bitcoin bootstrapped from a UTXO snapshot cannot serve the blocks beneath the snapshot until its background validation downloads them.** Fulcrum indexes from genesis, so it requests one, gets `Block not available (not fully downloaded)` (`Block not found on disk` before Bitcoin Core 31), abandons that sync attempt, and retries from its own tip every 2 seconds, following Bitcoin's download up. While such an error has been logged in the last 30 seconds, Sync Progress reports **Waiting for Bitcoin to provide historical blocks** instead of the failure lines. The same message on a node that never loaded a snapshot means Bitcoin's block files are damaged; its Reindex Blockchain action repairs them.
+**A Bitcoin bootstrapped from a UTXO snapshot cannot serve the blocks beneath the snapshot until its background validation downloads them.** Fulcrum indexes from genesis, so it requests one, gets `Block not available (not fully downloaded)` (`Block not found on disk` on Bitcoin Core 28), abandons that sync attempt, and retries from its own tip every 2 seconds, following Bitcoin's download up. While such an error has been logged in the last 30 seconds, Sync Progress reports **Waiting for Bitcoin to provide historical blocks** instead of the failure lines. The same message on a node that never loaded a snapshot means Bitcoin's block files are damaged; its Reindex Blockchain action repairs them.
 
 ## Backups and Restore
 

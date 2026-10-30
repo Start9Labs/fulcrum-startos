@@ -101,7 +101,7 @@ export const main = sdk.setupMain(async ({ effects }) => {
                 if (line.startsWith('<Controller>')) {
                   lastSyncLog = line.slice('<Controller>'.length).trim()
                 }
-                // Bitcoin's answer for a block it has not downloaded yet (31.x, then 28.x–30.x); Fulcrum retries every 2 s.
+                // Bitcoin's answer for a block it has not downloaded yet (29.x and later, then 28.x); Fulcrum retries every 2 s.
                 if (
                   line.includes('getblock: error response') &&
                   /Block not available \(not fully downloaded\)|Block not found on disk/.test(
