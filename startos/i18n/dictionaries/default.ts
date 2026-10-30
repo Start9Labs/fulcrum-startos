@@ -13,6 +13,7 @@ const dict = {
   'Sync Complete': 27,
   'Fulcrum has finished building its address index. The Electrum server is ready.': 28,
   'Fulcrum has finished building its address index. It is restarting once to apply a lower database memory setting, after which the Electrum server is ready.': 29,
+  'Waiting for Bitcoin to provide historical blocks': 37,
   // interfaces.ts
   'The main interface for accessing Fulcrum via Electrum protocol through SSL': 8,
   // actions/configure.ts

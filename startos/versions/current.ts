@@ -1,39 +1,21 @@
 import { IMPOSSIBLE, VersionInfo } from '@start9labs/start-sdk'
-import { sdk } from '../sdk'
 
 export const current = VersionInfo.of({
-  version: '2.1.3:1',
+  version: '2.1.4:0',
   releaseNotes: {
-    en_US: `Updated Fulcrum to 2.1.3. Fixes an off-by-one error in the Merkle cache and updates the bundled jemalloc library. Full release notes: https://github.com/cculianu/Fulcrum/releases/tag/v2.1.3
-
-- In Configure, Bitcoin RPC Timeout, Bitcoin RPC Clients and Worker Threads explain when to change them.
-- The unused "electrum" host left over from StartOS 0.3.5 is removed, along with any domain attached to it. Attach domains to Electrum (SSL) instead.
-- Bitcoin must be at least 28.4:29, 29.4:16, 30.3:16 or 31.1:16, depending on its major version. Bitcoin Knots (pre-RDTS) 29.3:29 or later also works.`,
-    es_ES: `Fulcrum actualizado a 2.1.3. Corrige un error de desfase de una unidad en la caché de Merkle y actualiza la biblioteca jemalloc incluida. Notas completas de la versión: https://github.com/cculianu/Fulcrum/releases/tag/v2.1.3
-
-- En Configurar, Tiempo de espera de Bitcoin RPC, Clientes Bitcoin RPC e Hilos de trabajo explican cuándo conviene cambiarlos.
-- Se elimina el host "electrum" sin uso que quedó de StartOS 0.3.5, junto con cualquier dominio asociado a él. Asocie los dominios a Electrum (SSL).
-- Bitcoin debe ser al menos la versión 28.4:29, 29.4:16, 30.3:16 o 31.1:16, según su versión principal. También funciona Bitcoin Knots (pre-RDTS) 29.3:29 o posterior.`,
-    de_DE: `Fulcrum auf 2.1.3 aktualisiert. Behebt einen Fehler durch eine Verschiebung um eins im Merkle-Cache und aktualisiert die mitgelieferte jemalloc-Bibliothek. Vollständige Versionshinweise: https://github.com/cculianu/Fulcrum/releases/tag/v2.1.3
-
-- Unter Konfigurieren erklären Bitcoin-RPC-Zeitlimit, Bitcoin-RPC-Clients und Worker-Threads, wann eine Änderung sinnvoll ist.
-- Der ungenutzte, von StartOS 0.3.5 übrig gebliebene Host "electrum" wird entfernt, zusammen mit allen ihm zugewiesenen Domains. Weisen Sie Domains stattdessen Electrum (SSL) zu.
-- Bitcoin muss je nach Hauptversion mindestens 28.4:29, 29.4:16, 30.3:16 oder 31.1:16 sein. Bitcoin Knots (pre-RDTS) ab 29.3:29 funktioniert ebenfalls.`,
-    pl_PL: `Zaktualizowano Fulcrum do 2.1.3. Naprawiono błąd przesunięcia o jeden w pamięci podręcznej Merkle i zaktualizowano dołączoną bibliotekę jemalloc. Pełne informacje o wydaniu: https://github.com/cculianu/Fulcrum/releases/tag/v2.1.3
-
-- W Konfiguruj pola Limit czasu Bitcoin RPC, Klienci Bitcoin RPC i Wątki robocze wyjaśniają, kiedy warto je zmienić.
-- Usunięto nieużywany host "electrum" pozostały po StartOS 0.3.5 wraz z przypisanymi do niego domenami. Przypisz domeny do Electrum (SSL).
-- Bitcoin musi być co najmniej w wersji 28.4:29, 29.4:16, 30.3:16 lub 31.1:16, zależnie od wersji głównej. Działa też Bitcoin Knots (pre-RDTS) 29.3:29 lub nowszy.`,
-    fr_FR: `Fulcrum mis à jour vers la version 2.1.3. Corrige une erreur de décalage d'une unité dans le cache Merkle et met à jour la bibliothèque jemalloc intégrée. Notes de version complètes : https://github.com/cculianu/Fulcrum/releases/tag/v2.1.3
-
-- Dans Configurer, Délai d'attente Bitcoin RPC, Clients Bitcoin RPC et Threads de travail expliquent quand les modifier.
-- L'hôte "electrum" inutilisé, hérité de StartOS 0.3.5, est supprimé avec tout domaine qui lui était associé. Associez plutôt les domaines à Electrum (SSL).
-- Bitcoin doit être au moins en version 28.4:29, 29.4:16, 30.3:16 ou 31.1:16, selon sa version majeure. Bitcoin Knots (pre-RDTS) 29.3:29 ou plus récent fonctionne aussi.`,
+    en_US:
+      'Updated Fulcrum to 2.1.4. Speeds up uncached transaction-history lookups used by subscriptions and history requests by up to 5–10×. While Bitcoin is still downloading the blocks beneath a UTXO snapshot, Sync Progress now says so. Full release notes: https://github.com/cculianu/Fulcrum/releases/tag/v2.1.4',
+    es_ES:
+      'Fulcrum actualizado a 2.1.4. Acelera hasta 5–10 veces las consultas del historial de transacciones sin caché usadas por las suscripciones y las solicitudes de historial. Mientras Bitcoin aún descarga los bloques anteriores a una instantánea UTXO, el progreso de sincronización ahora lo indica. Notas completas de la versión: https://github.com/cculianu/Fulcrum/releases/tag/v2.1.4',
+    de_DE:
+      'Fulcrum auf 2.1.4 aktualisiert. Beschleunigt nicht zwischengespeicherte Transaktionsverlaufsabfragen für Abonnements und Verlaufsanfragen um bis zu 5–10×. Solange Bitcoin noch die Blöcke unterhalb eines UTXO-Snapshots herunterlädt, zeigt der Synchronisierungsfortschritt dies jetzt an. Vollständige Versionshinweise: https://github.com/cculianu/Fulcrum/releases/tag/v2.1.4',
+    pl_PL:
+      'Zaktualizowano Fulcrum do 2.1.4. Przyspiesza nawet 5–10 razy zapytania o historię transakcji spoza pamięci podręcznej, używane przez subskrypcje i żądania historii. Gdy Bitcoin wciąż pobiera bloki poniżej migawki UTXO, postęp synchronizacji teraz to pokazuje. Pełne informacje o wydaniu: https://github.com/cculianu/Fulcrum/releases/tag/v2.1.4',
+    fr_FR:
+      'Fulcrum mis à jour vers la version 2.1.4. Accélère les recherches non mises en cache dans l’historique des transactions utilisées par les abonnements et les requêtes d’historique, jusqu’à un facteur de 5 à 10. Tant que Bitcoin télécharge encore les blocs antérieurs à un instantané UTXO, la progression de la synchronisation l’indique désormais. Notes de version complètes : https://github.com/cculianu/Fulcrum/releases/tag/v2.1.4',
   },
   migrations: {
-    up: async ({ effects }) => {
-      await sdk.MultiHost.of(effects, 'electrum').retire()
-    },
+    up: async () => {},
     down: IMPOSSIBLE,
   },
 })
