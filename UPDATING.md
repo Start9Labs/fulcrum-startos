@@ -21,4 +21,4 @@ The pinned tag lives in `startos/manifest/index.ts` at `images.main.source.docke
 ## Applying the bump
 
 1. In `startos/manifest/index.ts`, set `images.main.source.dockerTag` to `cculianu/fulcrum:v<new version>`.
-2. If `startos/versions/current.ts` carries a migration, preserve it as a historical version and register it in `startos/versions/index.ts` as described in the packaging guide. Then set `current.ts`'s `version` to `<new version>:0` and rewrite `releaseNotes` in every locale it carries; do not carry the old migration into the new version.
+2. In `startos/versions/current.ts`, set `version` to `<new version>:0` and rewrite `releaseNotes` in every locale it carries.
