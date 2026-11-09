@@ -23,7 +23,10 @@ export const shape = z.looseObject({
   rpcuser: z.literal('').catch(''),
   rpcpassword: z.literal('').catch(''),
   rpccookie: z.literal('/mnt/bitcoind/.cookie').catch('/mnt/bitcoind/.cookie'),
-  tcp: z.literal('0.0.0.0:50001').catch('0.0.0.0:50001'),
+  // One line per family: Fulcrum binds IPv6 IPv6-only, and reads ini's quoted `[::]` literally.
+  tcp: z
+    .tuple([z.literal('0.0.0.0:50001'), z.literal(':::50001')])
+    .catch(['0.0.0.0:50001', ':::50001']),
   peering: z.literal(false).catch(false),
   announce: z.literal(false).catch(false),
   bitcoind_timeout: iniNumber,
@@ -41,4 +44,5 @@ export const fulcrumConf = FileHelper.ini(
     subpath: 'fulcrum.conf',
   },
   shape,
+  { bracketedArray: false },
 )
