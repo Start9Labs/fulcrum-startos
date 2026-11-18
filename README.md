@@ -54,7 +54,7 @@ One volume, plus a read-only view of the Bitcoin node's.
 | ------ | ----------- | ------------------------------------------------------------------------- |
 | `main` | `/data`     | `fulcrum.conf`, `banner.txt`, `store.json`, and the RocksDB address index |
 
-Only Bitcoin's `rpc/` directory, which holds its RPC cookie, is mounted **read-only** at `/mnt/bitcoind` — not its data directory or wallets, and no credential is stored here.
+Only Bitcoin's `public` volume, which holds a copy of its RPC cookie, is mounted **read-only** at `/mnt/bitcoind` — not its data directory or wallets, and no credential is stored here.
 
 A pending Reindex is an empty `reindex.request` file beside them. `main` removes it before Fulcrum starts, once the index is gone — see [Actions](#actions).
 
@@ -98,9 +98,9 @@ The text served to connecting Electrum clients. The Configure action writes it, 
 
 One, and it is required — along with a particular configuration of it.
 
-| Dependency | Kind      | Health check | Mount                                    | Why                                     |
-| ---------- | --------- | ------------ | ---------------------------------------- | --------------------------------------- |
-| Bitcoin    | `running` | `bitcoind`   | `/mnt/bitcoind`, read-only (`rpc/` only) | Chain data over RPC, and the RPC cookie |
+| Dependency | Kind      | Health check | Mount                                             | Why                                     |
+| ---------- | --------- | ------------ | ------------------------------------------------- | --------------------------------------- |
+| Bitcoin    | `running` | `bitcoind`   | `/mnt/bitcoind`, read-only (`public` volume only) | Chain data over RPC, and the RPC cookie |
 
 **Fulcrum also needs Bitcoin configured a specific way, and asks for it as a task on Bitcoin's own page** — pruning off, `txindex` on, and ZeroMQ on. See [Tasks](#tasks).
 
@@ -218,7 +218,7 @@ file_models:
   - /data/store.json
 startos_managed_env_vars: []
 dependencies:
-  - bitcoind # required; its rpc/ directory mounted read-only at /mnt/bitcoind
+  - bitcoind # required; its public volume mounted read-only at /mnt/bitcoind
 interfaces:
   main: { type: api, port: 50002 } # TLS at the edge; 50001 plaintext is bridge-only
 actions:
