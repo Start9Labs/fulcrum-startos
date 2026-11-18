@@ -5,9 +5,14 @@ import { sdk } from './sdk'
 import { i18n } from './i18n'
 import { electrumPort, reindexRequest, resetSyncState } from './utils'
 import { manifest as bitcoinManifest } from 'bitcoin-core-startos/startos/manifest'
-import { rpcHostId, rpcPort } from 'bitcoin-core-startos/startos/utils'
+import {
+  rpcHostId,
+  rpcPort,
+  rpcSubpath,
+} from 'bitcoin-core-startos/startos/utils'
 import { storeJson } from './fileModels/store.json'
 import {
+  bitcoindMountpoint,
   defaultDbMem,
   fulcrumConf,
   syncedDbMem,
@@ -72,8 +77,8 @@ export const main = sdk.setupMain(async ({ effects }) => {
           .mountDependency<typeof bitcoinManifest>({
             dependencyId: 'bitcoind',
             volumeId: 'main',
-            subpath: null,
-            mountpoint: '/mnt/bitcoind',
+            subpath: rpcSubpath,
+            mountpoint: bitcoindMountpoint,
             readonly: true,
           }),
         'primary-sub',

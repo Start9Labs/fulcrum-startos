@@ -1,6 +1,10 @@
 import { FileHelper, z } from '@start9labs/start-sdk'
 import { totalmem } from 'os'
 import { sdk } from '../sdk'
+import { rpcCookieName } from 'bitcoin-core-startos/startos/utils'
+
+export const bitcoindMountpoint = '/mnt/bitcoind'
+const bitcoindCookie = `${bitcoindMountpoint}/${rpcCookieName}`
 
 // The post-sync reduction only reclaims db_mem while it still equals this, so a
 // value the user chose in Configure stays theirs.
@@ -22,7 +26,7 @@ export const shape = z.looseObject({
   bitcoind: z.string().optional().catch(undefined),
   rpcuser: z.literal('').catch(''),
   rpcpassword: z.literal('').catch(''),
-  rpccookie: z.literal('/mnt/bitcoind/.cookie').catch('/mnt/bitcoind/.cookie'),
+  rpccookie: z.literal(bitcoindCookie).catch(bitcoindCookie),
   // One line per family: Fulcrum binds IPv6 IPv6-only, and reads ini's quoted `[::]` literally.
   tcp: z
     .tuple([z.literal('0.0.0.0:50001'), z.literal(':::50001')])
