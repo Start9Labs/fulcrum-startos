@@ -3,7 +3,7 @@ import { rm } from 'fs/promises'
 import { StringDecoder } from 'string_decoder'
 import { sdk } from './sdk'
 import { i18n } from './i18n'
-import { electrumPort, reindexRequest } from './utils'
+import { electrumPort, reindexRequest, resetSyncState } from './utils'
 import { manifest as bitcoinManifest } from 'bitcoin-core-startos/startos/manifest'
 import { rpcHostId, rpcPort } from 'bitcoin-core-startos/startos/utils'
 import { storeJson } from './fileModels/store.json'
@@ -23,13 +23,7 @@ export const main = sdk.setupMain(async ({ effects }) => {
         force: true,
       })
     }
-    if (
-      (await fulcrumConf.read((c) => c.db_mem).once()) === syncedDbMem() &&
-      syncedDbMem() < defaultDbMem()
-    ) {
-      await fulcrumConf.merge(effects, { db_mem: defaultDbMem() })
-    }
-    await storeJson.merge(effects, { syncNotified: false })
+    await resetSyncState(effects)
     await rm(reindexRequest, { force: true })
   }
 

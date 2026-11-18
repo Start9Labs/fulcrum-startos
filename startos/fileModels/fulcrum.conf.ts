@@ -29,6 +29,10 @@ export const shape = z.looseObject({
     .catch(['0.0.0.0:50001', ':::50001']),
   peering: z.literal(false).catch(false),
   announce: z.literal(false).catch(false),
+  // 10.0.3.1 is the host's bridge address, the source of every connection from the box, another service or Tor.
+  subnets_to_exclude_from_per_ip_limits: z
+    .literal('127.0.0.1/32, ::1/128, 10.0.3.1/32')
+    .catch('127.0.0.1/32, ::1/128, 10.0.3.1/32'),
   bitcoind_timeout: iniNumber,
   bitcoind_clients: iniNumber,
   worker_threads: iniNumber,
