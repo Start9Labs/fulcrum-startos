@@ -72,9 +72,11 @@ Three models. One is Fulcrum's configuration, one is the banner it serves to cli
 
 ### fulcrum.conf
 
-**Enforced** — rewritten to a fixed value whenever the package writes the file: `datadir`, `tcp`, `rpccookie`, `banner`, `peering`, `announce`, and empty `rpcuser` / `rpcpassword`. The credential pair is pinned empty because authentication is the mounted cookie.
+**Enforced** — rewritten to a fixed value whenever the package writes the file: `datadir`, `tcp`, `rpccookie`, `banner`, `peering`, `announce`, `subnets_to_exclude_from_per_ip_limits`, and empty `rpcuser` / `rpcpassword`. The credential pair is pinned empty because authentication is the mounted cookie.
 
 Two of those are overrides rather than wiring: **`peering` and `announce` are both forced off**, where Fulcrum would otherwise participate in the public Electrum server network and advertise itself. A server behind StartOS is not intended to be a public one.
+
+**`subnets_to_exclude_from_per_ip_limits` adds `10.0.3.1/32` to upstream's loopback defaults.** LAN and WAN clients reach Fulcrum with their own addresses, but every connection from the box itself, from another service, or through Tor arrives from the host's bridge address, so upstream's per-IP client limit (`max_clients_per_ip`, 12) would otherwise cap them all together.
 
 **Derived:** `bitcoind` is the node's RPC address, written by `main` from the node's own binding on every start. When Bitcoin is absent the key is omitted rather than filled with a dead address.
 
