@@ -80,7 +80,7 @@ Two of those are overrides rather than wiring: **`peering` and `announce` are bo
 
 **Yours, through the Configure action:** the RPC timeout and client count, worker threads, `db_max_open_files`, and `max_history`.
 
-**Seeded, then reclaimed once:** `db_mem` is set at install to a quarter of system RAM, capped — a large cache makes the initial index build much faster. When the index finishes, the package lowers it, **but only if the value is still exactly what it seeded.** A value you chose in Configure is left alone, with two exceptions after a reindex, because the package decides by value rather than by who set it: a value equal to the lowered one is put back to the seeded value for the rebuild, and a value equal to the seeded one is lowered when the rebuild finishes, as after the first build.
+**Seeded, then reclaimed once:** `db_mem` is set at install to a quarter of system RAM, capped — a large cache makes the initial index build much faster. When the index finishes, the package lowers it, **but only if the value is still exactly what it seeded.** A value you chose in Configure is left alone, with two exceptions after a reindex or a restore, because the package decides by value rather than by who set it: a value equal to the lowered one is put back to the seeded value for the rebuild, and a value equal to the seeded one is lowered when the rebuild finishes, as after the first build.
 
 Fulcrum reads this file only at startup, so every change to it restarts the daemon.
 
@@ -138,7 +138,7 @@ Sets the banner and Fulcrum's performance parameters.
 - **What it changes:** `banner.txt`, and the tunable keys in `fulcrum.conf`.
 - **Cost:** seconds, then a restart — Fulcrum only reads its config at startup.
 - **Repeat safety:** idempotent; the form is pre-filled from the current files.
-- **Worth knowing about `db_mem`:** setting it here takes it out of the package's hands. The post-sync reduction only applies to the value install seeded, so a value you choose persists — including through the index build, where a large one is a real speed-up and a small one is a real slow-down. The exceptions come with a reindex, which cannot tell two values from the package's own: one equal to the lowered value is raised for the rebuild, and one equal to the seeded value is lowered when the rebuild finishes.
+- **Worth knowing about `db_mem`:** setting it here takes it out of the package's hands. The post-sync reduction only applies to the value install seeded, so a value you choose persists — including through the index build, where a large one is a real speed-up and a small one is a real slow-down. The exceptions come with a reindex or a restore, which cannot tell two values from the package's own: one equal to the lowered value is raised for the rebuild, and one equal to the seeded value is lowered when the rebuild finishes.
 - **Worth knowing about `max_history`:** an address with more transactions than this returns an empty or partial history rather than an error, so a wallet holding such an address shows the funds as missing. Raise it if that happens.
 
 ### Reindex
@@ -185,14 +185,14 @@ The `main` volume is copied wholesale — `sdk.Backups.ofVolumes('main')` — wi
 - **Excluded:** the RocksDB index directories and the lock file. These are derived from the chain and can be very large.
 - **Included:** `fulcrum.conf`, `banner.txt`, and `store.json`.
 
-**A restore therefore rebuilds the index from scratch**, which takes as long as the original build did and needs Bitcoin present and synced first. What comes back is the configuration, not the work.
+**A restore therefore rebuilds the index from scratch**, which takes as long as the original build did and needs Bitcoin present and synced first. What comes back is the configuration, not the work. Restore init treats the rebuild as a reindex does: `db_mem` goes back to the seeded value if it is exactly the lowered one, and `syncNotified` is cleared, so the rebuild is notified as a first run.
 
 ## Limitations and Differences
 
 1. **Peering and announcement are disabled.** Fulcrum will not join the public Electrum server network or advertise itself.
 2. **The index is not backed up**, and a restore rebuilds it.
 3. **Bitcoin must run unpruned with `txindex` and ZeroMQ enabled**, which is a change to Bitcoin's configuration, requested as a task on that service.
-4. **`db_mem` is managed until you set it**, after which it is yours — including the post-sync reduction, which no longer applies. A reindex makes two exceptions, because it cannot tell them from the package's own values: a value equal to the lowered one is raised for the rebuild, and one equal to the seeded one is lowered when the rebuild finishes.
+4. **`db_mem` is managed until you set it**, after which it is yours — including the post-sync reduction, which no longer applies. A reindex or a restore makes two exceptions, because it cannot tell them from the package's own values: a value equal to the lowered one is raised for the rebuild, and one equal to the seeded one is lowered when the rebuild finishes.
 5. **The plaintext Electrum port gets no LAN or WAN forward.** Every LAN, `.local` and domain address is the TLS one; a Tor address added with SSL off is the one way to reach the plaintext port from elsewhere.
 6. **No riscv64 build.** x86_64 and aarch64 only.
 

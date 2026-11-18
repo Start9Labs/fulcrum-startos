@@ -1,18 +1,18 @@
 import { IMPOSSIBLE, VersionInfo } from '@start9labs/start-sdk'
 
 export const current = VersionInfo.of({
-  version: '2.1.4:3',
+  version: '2.1.4:4',
   releaseNotes: {
     en_US:
-      'Requires StartOS 0.4.2 or later. Fixes a case where Fulcrum could stop responding until restarted.',
+      'After a restore from backup, Fulcrum rebuilds its index with the full memory setting and sends the Sync Complete notification when the rebuild finishes.',
     es_ES:
-      'Requiere StartOS 0.4.2 o posterior. Corrige un caso en el que Fulcrum podía dejar de responder hasta reiniciarlo.',
+      'Tras restaurar desde una copia de seguridad, Fulcrum reconstruye su índice con la configuración de memoria completa y envía la notificación «Sincronización completa» al terminar.',
     de_DE:
-      'Erfordert StartOS 0.4.2 oder neuer. Behebt einen Fall, in dem Fulcrum bis zu einem Neustart nicht mehr reagieren konnte.',
+      'Nach einer Wiederherstellung aus einer Sicherung baut Fulcrum seinen Index mit der vollen Speichereinstellung neu auf und sendet nach Abschluss die Benachrichtigung „Synchronisierung abgeschlossen“.',
     pl_PL:
-      'Wymaga StartOS 0.4.2 lub nowszego. Naprawia przypadek, w którym Fulcrum mógł przestać odpowiadać aż do ponownego uruchomienia.',
+      'Po przywróceniu z kopii zapasowej Fulcrum odbudowuje swój indeks z pełnym ustawieniem pamięci i po zakończeniu wysyła powiadomienie „Synchronizacja zakończona”.',
     fr_FR:
-      'Nécessite StartOS 0.4.2 ou une version ultérieure. Corrige un cas où Fulcrum pouvait cesser de répondre jusqu’à son redémarrage.',
+      'Après une restauration depuis une sauvegarde, Fulcrum reconstruit son index avec le réglage de mémoire complet et envoie la notification « Synchronisation terminée » une fois la reconstruction achevée.',
   },
   migrations: {
     up: async () => {},
