@@ -4,6 +4,7 @@
 
 - [Start9 Bitcoin Guides](https://docs.start9.com/bitcoin-guides/) — pointing a wallet at your own Electrum server — certificates, SSL and Tor — which wallets work, and archival versus pruned Bitcoin nodes.
 - [Fulcrum documentation](https://github.com/cculianu/Fulcrum/tree/master/doc) — the upstream documentation covering configuration, operation, and tuning.
+- [Example configuration](https://github.com/cculianu/Fulcrum/blob/master/doc/fulcrum-example-config.conf) — every setting, with its default and what it does.
 
 ## Requirements
 
